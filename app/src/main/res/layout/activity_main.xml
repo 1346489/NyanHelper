@@ -3,17 +3,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- 背景图（如果没有 bg_main.png，用纯色兜底） -->
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/bg_main"
         android:scaleType="centerCrop" />
 
+    <!-- 半透明白色遮罩，让文字更清晰 -->
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#B0FFFFFF" />
 
+    <!-- 主内容 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
