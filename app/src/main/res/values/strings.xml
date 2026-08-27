@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">本喵助手</string>
+    <string name="accessibility_desc">使用无障碍读取界面文字并做喵化替换辅助，同时配合悬浮窗设置。</string>
+</resources>
