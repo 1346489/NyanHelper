@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.NyanHelper" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#FF9EBC</item>
+        <item name="colorPrimaryDark">#FFD1DC</item>
+        <item name="colorAccent">#FF9EBC</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:statusBarColor">#FFF2F6</item>
+    </style>
+</resources>
