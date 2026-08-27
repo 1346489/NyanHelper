@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#FFF2F6">
+    android:layout_height="match_parent">
 
-    <!-- 半透明白色遮罩，让内容更清晰 -->
+    <!-- 大背景图 -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/bg_main"
+        android:scaleType="centerCrop" />
+
+    <!-- 半透明白遮罩 -->
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#B0FFFFFF" />
+        android:background="#CCFFFFFF" />
 
     <!-- 主内容 -->
     <LinearLayout
@@ -16,16 +22,14 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:padding="28dp">
+        android:padding="24dp">
 
         <ImageView
             android:id="@+id/appAvatar"
-            android:layout_width="112dp"
-            android:layout_height="112dp"
+            android:layout_width="88dp"
+            android:layout_height="88dp"
             android:src="@drawable/avatar"
-            android:scaleType="centerCrop"
-            android:background="@drawable/bg_circle_white"
-            android:padding="6dp"
+            android:scaleType="fitCenter"
             android:layout_marginTop="36dp" />
 
         <TextView
@@ -34,27 +38,28 @@
             android:text="本喵助手"
             android:textSize="30sp"
             android:textStyle="bold"
-            android:textColor="#D64F88"
-            android:layout_marginTop="14dp" />
+            android:textColor="#D64F83"
+            android:layout_marginTop="12dp" />
 
         <TextView
             android:id="@+id/statusText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_card_pink"
-            android:padding="18dp"
-            android:textColor="#6B3952"
+            android:padding="16dp"
+            android:textColor="#885566"
             android:textSize="15sp"
-            android:layout_marginTop="28dp" />
+            android:layout_marginTop="22dp"
+            android:lineSpacingExtra="4dp" />
 
         <Button
             android:id="@+id/btnFloat"
             android:layout_width="match_parent"
-            android:layout_height="54dp"
+            android:layout_height="52dp"
             android:text="开启悬浮窗"
-            android:backgroundTint="#FF9EBC"
             android:textColor="#FFFFFF"
             android:textSize="17sp"
+            android:backgroundTint="#F48FB1"
             android:layout_marginTop="22dp" />
 
         <Button
@@ -62,8 +67,9 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:text="打开无障碍权限"
-            android:backgroundTint="#FFD1DC"
-            android:textColor="#9C486B"
+            android:textColor="#D64F83"
+            android:textSize="15sp"
+            android:backgroundTint="#FFD6E2"
             android:layout_marginTop="12dp" />
 
         <Button
@@ -71,9 +77,10 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:text="打开悬浮窗权限"
-            android:backgroundTint="#FFD1DC"
-            android:textColor="#9C486B"
-            android:layout_marginTop="8dp" />
+            android:textColor="#D64F83"
+            android:textSize="15sp"
+            android:backgroundTint="#FFD6E2"
+            android:layout_marginTop="10dp" />
 
     </LinearLayout>
 
