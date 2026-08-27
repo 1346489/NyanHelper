@@ -1,20 +1,13 @@
 package com.moe.nyanhelper;
 
 public class NyanText {
-    public static String transform(String text, boolean addTail, boolean replaceMe, boolean replaceYou) {
-        if (text == null || text.isEmpty()) {
-            return text;
+    public static String process(String text) {
+        if (text == null) return null;
+        if (Prefs.isFloatOn(null)) { // 简化，实际从 AccessibilityService 传 Context
+            text = text.replace("我", "本喵");
+            text = text.replace("你", "主人");
+            if (!text.endsWith("喵")) text += "喵";
         }
-        String s = text;
-        if (replaceMe) {
-            s = s.replace("我", "本喵");
-        }
-        if (replaceYou) {
-            s = s.replace("你", "主人");
-        }
-        if (addTail && !s.endsWith("喵")) {
-            s = s + "喵";
-        }
-        return s;
+        return text;
     }
 }
