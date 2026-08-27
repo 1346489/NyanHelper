@@ -5,14 +5,11 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- 如果 targetSdk >= 34 且用了 foregroundServiceType="dataSync"，建议加这个 -->
-    <!-- 如果不需要 dataSync 类型，下面这行可以删，同时 service 也不要写 foregroundServiceType -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
-
     <application
         android:allowBackup="true"
-        android:theme="@style/Theme.NyanHelper"
+        android:icon="@android:drawable/ic_menu_info_details"
         android:label="本喵助手"
+        android:theme="@style/Theme.NyanHelper"
         android:supportsRtl="true">
 
         <activity
@@ -27,8 +24,7 @@
 
         <service
             android:name=".FloatWindowService"
-            android:exported="false"
-            android:foregroundServiceType="dataSync" />
+            android:exported="false" />
 
         <service
             android:name=".NyanAccessibilityService"
