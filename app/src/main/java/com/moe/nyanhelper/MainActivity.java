@@ -30,17 +30,12 @@ public class MainActivity extends AppCompatActivity {
         btnAccessibility = findViewById(R.id.btnAccessibility);
         btnOverlay = findViewById(R.id.btnOverlay);
 
-        // 无障碍权限按钮
-        btnAccessibility.setOnClickListener(v -> {
-            startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-        });
+        btnAccessibility.setOnClickListener(v ->
+                startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+        );
 
-        // 悬浮窗权限按钮
-        btnOverlay.setOnClickListener(v -> {
-            requestOverlayPermission();
-        });
+        btnOverlay.setOnClickListener(v -> requestOverlayPermission());
 
-        // Android 13+ 通知权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
@@ -59,12 +54,11 @@ public class MainActivity extends AppCompatActivity {
         boolean serviceRunning = isServiceRunning(FloatWindowService.class);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("悬浮窗：").append(overlay ? "已授权" : "未授权").append("\n");
+        sb.append("悬浮窗权限：").append(overlay ? "已授权" : "未授权").append("\n");
         sb.append("无障碍：").append(accessibility ? "已开启喵" : "未开启").append("\n");
         sb.append("悬浮窗服务：").append(serviceRunning ? "运行中" : "未运行");
         statusText.setText(sb.toString());
 
-        // 按钮根据状态智能切换
         if (serviceRunning) {
             btnFloat.setText("关闭悬浮窗");
             btnFloat.setOnClickListener(v -> {
@@ -100,9 +94,7 @@ public class MainActivity extends AppCompatActivity {
         android.app.ActivityManager am = (android.app.ActivityManager) getSystemService(ACTIVITY_SERVICE);
         if (am != null) {
             for (android.app.ActivityManager.RunningServiceInfo info : am.getRunningServices(Integer.MAX_VALUE)) {
-                if (serviceClass.getName().equals(info.service.getClassName())) {
-                    return true;
-                }
+                if (serviceClass.getName().equals(info.service.getClassName())) return true;
             }
         }
         return false;
