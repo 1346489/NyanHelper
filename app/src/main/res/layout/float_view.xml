@@ -3,16 +3,15 @@
     android:id="@+id/float_root"
     android:layout_width="56dp"
     android:layout_height="56dp"
-    android:background="@drawable/bg_circle_pink"
+    android:background="@drawable/bg_circle_white"
     android:clickable="true"
     android:focusable="true">
 
-    <TextView
-        android:id="@+id/float_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="🐱"
-        android:textSize="22sp"
-        android:textColor="#FFFFFF" />
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/float_icon"
+        android:scaleType="centerCrop"
+        android:padding="4dp" />
+
 </FrameLayout>
