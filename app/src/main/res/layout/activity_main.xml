@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/bg_main"
+        android:scaleType="centerCrop" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#B0FFFFFF" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="28dp">
+
+        <ImageView
+            android:id="@+id/appAvatar"
+            android:layout_width="112dp"
+            android:layout_height="112dp"
+            android:src="@drawable/avatar"
+            android:scaleType="centerCrop"
+            android:background="@drawable/bg_circle_white"
+            android:padding="6dp"
+            android:layout_marginTop="36dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="本喵助手"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:textColor="#D64F88"
+            android:layout_marginTop="14dp" />
+
+        <TextView
+            android:id="@+id/statusText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card_pink"
+            android:padding="18dp"
+            android:textColor="#6B3952"
+            android:textSize="15sp"
+            android:layout_marginTop="28dp" />
+
+        <Button
+            android:id="@+id/btnFloat"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:text="开启悬浮窗"
+            android:backgroundTint="#FF9EBC"
+            android:textColor="#FFFFFF"
+            android:textSize="17sp"
+            android:layout_marginTop="22dp" />
+
+        <Button
+            android:id="@+id/btnAccessibility"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="打开无障碍权限"
+            android:backgroundTint="#FFD1DC"
+            android:textColor="#9C486B"
+            android:layout_marginTop="12dp" />
+
+        <Button
+            android:id="@+id/btnOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="打开悬浮窗权限"
+            android:backgroundTint="#FFD1DC"
+            android:textColor="#9C486B"
+            android:layout_marginTop="8dp" />
+
+    </LinearLayout>
+
+</FrameLayout>
