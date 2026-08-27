@@ -24,48 +24,32 @@ public class MainActivity extends AppCompatActivity {
         statusText = findViewById(R.id.statusText);
         btnFloat = findViewById(R.id.btnFloat);
 
-        btnFloat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!Settings.canDrawOverlays(MainActivity.this)) {
-                    startActivity(new Intent(
-                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                            Uri.parse("package:" + getPackageName())
-                    ));
-                    return;
-                }
-                boolean on = !Prefs.isFloatOn(MainActivity.this);
-                try {
-                    Intent intent = new Intent(MainActivity.this, FloatWindowService.class);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        startForegroundService(intent);
-                    } else {
-                        startService(intent);
-                    }
-                    Prefs.setFloatOn(MainActivity.this, on);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                refresh();
+        btnFloat.setOnClickListener(v -> {
+            if (!Settings.canDrawOverlays(this)) {
+                Intent intent = new Intent(
+                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivity(intent);
+                return;
             }
+            boolean on = !Prefs.isFloatOn(this);
+            Intent svc = new Intent(this, FloatWindowService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(svc);
+            } else {
+                startService(svc);
+            }
+            Prefs.setFloatOn(this, on);
+            refresh();
         });
 
-        findViewById(R.id.btnAccessibility).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-            }
-        });
+        findViewById(R.id.btnAccessibility).setOnClickListener(v ->
+                startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)));
 
-        findViewById(R.id.btnOverlay).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        findViewById(R.id.btnOverlay).setOnClickListener(v ->
                 startActivity(new Intent(
                         Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + getPackageName())
-                ));
-            }
-        });
+                        Uri.parse("package:" + getPackageName()))));
     }
 
     @Override
