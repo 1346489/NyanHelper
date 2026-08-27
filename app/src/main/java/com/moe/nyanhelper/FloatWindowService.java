@@ -94,72 +94,50 @@ public class FloatWindowService extends Service {
         p.gravity = Gravity.TOP | Gravity.START;
         p.x = dp(40);
         p.y = dp(120);
-        wm.addView(panelView, p);
+package com.moe.nyanhelper;
 
-        Switch swTail = panelView.findViewById(R.id.switchTail);
-        Switch swMe = panelView.findViewById(R.id.switchMe);
-        Switch swYou = panelView.findViewById(R.id.switchYou);
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.Service;
+import android.content.Intent;
+import android.os.Build;
+import android.os.IBinder;
 
-        swTail.setChecked(Prefs.addMeowTail(this));
-        swMe.setChecked(Prefs.replaceMe(this));
-        swYou.setChecked(Prefs.replaceYou(this));
+import androidx.core.app.NotificationCompat;
 
-        swTail.setOnCheckedChangeListener(new android.widget.CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(android.widget.CompoundButton buttonView, boolean isChecked) {
-                Prefs.setAddMeowTail(FloatWindowService.this, isChecked);
-            }
-        });
-        swMe.setOnCheckedChangeListener(new android.widget.CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(android.widget.CompoundButton buttonView, boolean isChecked) {
-                Prefs.setReplaceMe(FloatWindowService.this, isChecked);
-            }
-        });
-        swYou.setOnCheckedChangeListener(new android.widget.CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(android.widget.CompoundButton buttonView, boolean isChecked) {
-                Prefs.setReplaceYou(FloatWindowService.this, isChecked);
-            }
-        });
-        panelView.findViewById(R.id.closePanel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                collapse(true);
-            }
-        });
-    }
+public class FloatWindowService extends Service {
 
-    private void expand(boolean anim) {
-        if (expanded) {
-            return;
-        }
-        expanded = true;
-        panelView.setVisibility(View.VISIBLE);
-        ballView.setVisibility(View.GONE);
-    }
+    private static final String CHANNEL_ID = "nyan_channel";
 
-    private void collapse(boolean anim) {
-        if (!expanded) {
-            return;
-        }
-        expanded = false;
-        panelView.setVisibility(View.GONE);
-        ballView.setVisibility(View.VISIBLE);
-    }
-
-    private int dp(int v) {
-        return (int) (v * getResources().getDisplayMetrics().density);
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        createNotificationChannel();
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("本喵助手")
+                .setContentText("悬浮窗运行中喵~")
+                .setSmallIcon(android.R.drawable.ic_menu_info_details)
+                .build();
+        startForeground(1, notification);
     }
 
     @Override
-    public void onDestroy() {
-        if (panelView != null) {
-            wm.removeView(panelView);
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY;
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID, "本喵助手", NotificationManager.IMPORTANCE_LOW);
+            NotificationManager nm = getSystemService(NotificationManager.class);
+            nm.createNotificationChannel(channel);
         }
-        if (ballView != null) {
-            wm.removeView(ballView);
-        }
-        super.onDestroy();
     }
 }
