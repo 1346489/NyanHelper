@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">本喵助手</string>
-    <string name="accessibility_description">本喵助手辅助功能服务，用于界面文字替换。</string>
+    <style name="Theme.NyanHelper" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#FF9EBC</item>
+        <item name="colorPrimaryDark">#FFD1DC</item>
+        <item name="colorAccent">#FF9EBC</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:statusBarColor">#FFF2F6</item>
+    </style>
 </resources>
