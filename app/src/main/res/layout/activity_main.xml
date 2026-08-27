@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#FFF2F6">
 
-    <!-- 背景图（如果没有 bg_main.png，用纯色兜底） -->
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/bg_main"
-        android:scaleType="centerCrop" />
-
-    <!-- 半透明白色遮罩，让文字更清晰 -->
+    <!-- 半透明白色遮罩，让内容更清晰 -->
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
