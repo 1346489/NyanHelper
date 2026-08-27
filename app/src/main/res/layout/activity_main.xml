@@ -1,87 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_main"
+    android:fillViewport="true">
 
-    <!-- 大背景图 -->
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/bg_main"
-        android:scaleType="centerCrop" />
-
-    <!-- 半透明白遮罩 -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#CCFFFFFF" />
-
-    <!-- 主内容 -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center_horizontal"
         android:padding="24dp">
 
         <ImageView
-            android:id="@+id/appAvatar"
-            android:layout_width="88dp"
-            android:layout_height="88dp"
+            android:id="@+id/avatar"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="32dp"
             android:src="@drawable/avatar"
-            android:scaleType="fitCenter"
-            android:layout_marginTop="36dp" />
+            android:background="@drawable/bg_card_white"
+            android:padding="4dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="本喵助手"
-            android:textSize="30sp"
+            android:textSize="28sp"
             android:textStyle="bold"
-            android:textColor="#D64F83"
+            android:textColor="#E91E8C"
             android:layout_marginTop="12dp" />
 
         <TextView
-            android:id="@+id/statusText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="让文字变得可爱喵~"
+            android:textSize="14sp"
+            android:textColor="#888"
+            android:layout_marginBottom="24dp" />
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_card_pink"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card_white"
             android:padding="16dp"
-            android:textColor="#885566"
-            android:textSize="15sp"
-            android:layout_marginTop="22dp"
-            android:lineSpacingExtra="4dp" />
+            android:elevation="4dp">
+
+            <TextView
+                android:id="@+id/tvFloatStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="❌ 悬浮窗权限未开启"
+                android:textSize="14sp"
+                android:textColor="#333"
+                android:paddingVertical="6dp" />
+
+            <TextView
+                android:id="@+id/tvAccessStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="❌ 无障碍服务未开启"
+                android:textSize="14sp"
+                android:textColor="#333"
+                android:paddingVertical="6dp" />
+
+            <TextView
+                android:id="@+id/tvServiceStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="⚪ 悬浮窗服务未运行"
+                android:textSize="14sp"
+                android:textColor="#333"
+                android:paddingVertical="6dp" />
+        </LinearLayout>
 
         <Button
-            android:id="@+id/btnFloat"
+            android:id="@+id/btnFloatToggle"
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:text="开启悬浮窗"
+            android:textSize="16sp"
+            android:textStyle="bold"
             android:textColor="#FFFFFF"
-            android:textSize="17sp"
-            android:backgroundTint="#F48FB1"
-            android:layout_marginTop="22dp" />
+            android:backgroundTint="#E91E8C"
+            android:layout_marginTop="20dp" />
 
         <Button
-            android:id="@+id/btnAccessibility"
+            android:id="@+id/btnAccessOpen"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="打开无障碍权限"
-            android:textColor="#D64F83"
-            android:textSize="15sp"
-            android:backgroundTint="#FFD6E2"
+            android:layout_height="52dp"
+            android:text="去开启无障碍服务"
+            android:textSize="16sp"
+            android:textColor="#E91E8C"
+            android:backgroundTint="#FFF0F5"
             android:layout_marginTop="12dp" />
 
         <Button
-            android:id="@+id/btnOverlay"
+            android:id="@+id/btnServiceToggle"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="打开悬浮窗权限"
-            android:textColor="#D64F83"
-            android:textSize="15sp"
-            android:backgroundTint="#FFD6E2"
-            android:layout_marginTop="10dp" />
+            android:layout_height="52dp"
+            android:text="刷新状态"
+            android:textSize="16sp"
+            android:textColor="#888"
+            android:backgroundTint="#F5F5F5"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="32dp" />
 
     </LinearLayout>
-
-</FrameLayout>
+</ScrollView>
