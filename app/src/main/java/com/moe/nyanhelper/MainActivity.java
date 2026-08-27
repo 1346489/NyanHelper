@@ -1,131 +1,113 @@
 package com.moe.nyanhelper;
 
-import android.Manifest;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int REQUEST_OVERLAY = 100;
-
-    private TextView statusText;
-    private Button btnFloat, btnAccessibility, btnOverlay;
+    private TextView tvFloatStatus, tvAccessStatus, tvServiceStatus;
+    private Button btnFloatToggle, btnAccessOpen, btnRefresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        statusText = findViewById(R.id.statusText);
-        btnFloat = findViewById(R.id.btnFloat);
-        btnAccessibility = findViewById(R.id.btnAccessibility);
-        btnOverlay = findViewById(R.id.btnOverlay);
+        initViews();
+        updateStatus();
 
-        btnAccessibility.setOnClickListener(v ->
-                startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
-        );
+        btnFloatToggle.setOnClickListener(v -> toggleFloatWindow());
+        btnAccessOpen.setOnClickListener(v -> openAccessibilitySettings());
+        btnRefresh.setOnClickListener(v -> updateStatus());
+    }
 
-        btnOverlay.setOnClickListener(v -> requestOverlayPermission());
+    private void initViews() {
+        ImageView avatar = findViewById(R.id.avatar);
+        tvFloatStatus = findViewById(R.id.tvFloatStatus);
+        tvAccessStatus = findViewById(R.id.tvAccessStatus);
+        tvServiceStatus = findViewById(R.id.tvServiceStatus);
+        btnFloatToggle = findViewById(R.id.btnFloatToggle);
+        btnAccessOpen = findViewById(R.id.btnAccessOpen);
+        btnRefresh = findViewById(R.id.btnServiceToggle);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+        avatar.setImageResource(R.drawable.avatar);
+    }
+
+    private void updateStatus() {
+        boolean hasFloat = Settings.canDrawOverlays(this);
+        tvFloatStatus.setText(hasFloat ? "✅ 悬浮窗权限已开启" : "❌ 悬浮窗权限未开启");
+
+        boolean hasAccess = isAccessibilityEnabled();
+        tvAccessStatus.setText(hasAccess ? "✅ 无障碍服务已开启" : "❌ 无障碍服务未开启");
+
+        boolean floatStarted = getSharedPreferences("nyan_config", MODE_PRIVATE)
+                .getBoolean("float_started", false);
+        tvServiceStatus.setText(floatStarted && hasFloat
+                ? "🟢 悬浮窗服务运行中" : "⚪ 悬浮窗服务未运行");
+        btnFloatToggle.setText(floatStarted && hasFloat ? "关闭悬浮窗" : "开启悬浮窗");
+    }
+
+    private void toggleFloatWindow() {
+        if (!Settings.canDrawOverlays(this)) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
+            Toast.makeText(this, "请先授予悬浮窗权限喵~", Toast.LENGTH_LONG).show();
+            return;
         }
+
+        Intent intent = new Intent(this, FloatWindowService.class);
+        boolean currentlyRunning = getSharedPreferences("nyan_config", MODE_PRIVATE)
+                .getBoolean("float_started", false);
+
+        if (currentlyRunning) {
+            stopService(intent);
+            getSharedPreferences("nyan_config", MODE_PRIVATE).edit()
+                    .putBoolean("float_started", false).apply();
+            Toast.makeText(this, "悬浮窗已关闭喵~", Toast.LENGTH_SHORT).show();
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent);
+            } else {
+                startService(intent);
+            }
+            getSharedPreferences("nyan_config", MODE_PRIVATE).edit()
+                    .putBoolean("float_started", true).apply();
+            Toast.makeText(this, "悬浮窗已开启喵~", Toast.LENGTH_SHORT).show();
+        }
+        updateStatus();
+    }
+
+    private void openAccessibilitySettings() {
+        startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+    }
+
+    private boolean isAccessibilityEnabled() {
+        for (android.accessibilityservice.AccessibilityServiceInfo info :
+                ((android.view.accessibility.AccessibilityManager)
+                        getSystemService(ACCESSIBILITY_SERVICE))
+                        .getEnabledAccessibilityServiceList(
+                                android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_ALL_MASK)) {
+            if (info.getId() != null && info.getId().contains("nyanhelper")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         updateStatus();
-    }
-
-    private void updateStatus() {
-        boolean overlay = Settings.canDrawOverlays(this);
-        boolean accessibility = isAccessibilityEnabled();
-        boolean serviceRunning = isServiceRunning(FloatWindowService.class);
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("悬浮窗权限：").append(overlay ? "已授权" : "未授权").append("\n");
-        sb.append("无障碍：").append(accessibility ? "已开启喵" : "未开启").append("\n");
-        sb.append("悬浮窗服务：").append(serviceRunning ? "运行中" : "未运行");
-        statusText.setText(sb.toString());
-
-        if (serviceRunning) {
-            btnFloat.setText("关闭悬浮窗");
-            btnFloat.setOnClickListener(v -> {
-                stopService(new Intent(this, FloatWindowService.class));
-                updateStatus();
-                Toast.makeText(this, "悬浮窗已关闭喵~", Toast.LENGTH_SHORT).show();
-            });
-        } else {
-            btnFloat.setText("开启悬浮窗");
-            btnFloat.setOnClickListener(v -> {
-                if (Settings.canDrawOverlays(this)) {
-                    startFloatService();
-                } else {
-                    Toast.makeText(this, "请先授予悬浮窗权限喵~", Toast.LENGTH_SHORT).show();
-                    requestOverlayPermission();
-                }
-            });
-        }
-    }
-
-    private boolean isAccessibilityEnabled() {
-        try {
-            int enabled = Settings.Secure.getInt(getContentResolver(), Settings.Secure.ACCESSIBILITY_ENABLED);
-            if (enabled == 1) {
-                String services = Settings.Secure.getString(getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
-                return services != null && services.contains(getPackageName());
-            }
-        } catch (Exception ignored) {}
-        return false;
-    }
-
-    private boolean isServiceRunning(Class<?> serviceClass) {
-        android.app.ActivityManager am = (android.app.ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        if (am != null) {
-            for (android.app.ActivityManager.RunningServiceInfo info : am.getRunningServices(Integer.MAX_VALUE)) {
-                if (serviceClass.getName().equals(info.service.getClassName())) return true;
-            }
-        }
-        return false;
-    }
-
-    private void requestOverlayPermission() {
-        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:" + getPackageName()));
-        startActivityForResult(intent, REQUEST_OVERLAY);
-    }
-
-    private void startFloatService() {
-        Intent intent = new Intent(this, FloatWindowService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent);
-        } else {
-            startService(intent);
-        }
-        Toast.makeText(this, "悬浮窗已启动喵~", Toast.LENGTH_SHORT).show();
-        updateStatus();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_OVERLAY) {
-            if (Settings.canDrawOverlays(this)) {
-                startFloatService();
-            } else {
-                Toast.makeText(this, "悬浮窗权限被拒绝了喵 T_T", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 }
