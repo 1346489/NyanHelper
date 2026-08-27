@@ -9,62 +9,41 @@ import android.provider.Settings;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_OVERLAY = 100;
-    private static final int REQUEST_NOTIFICATION = 101;
 
-    private TextView tvStatus;
-    private Button btnFloat;
-    private Button btnAccessibility;
-    private Button btnClose;
+    private TextView statusText;
+    private Button btnFloat, btnAccessibility, btnOverlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        // ===== UI 布局 =====
-        tvStatus = new TextView(this);
-        tvStatus.setText("本喵助手");
-        tvStatus.setTextSize(22);
-        tvStatus.setGravity(android.view.Gravity.CENTER);
+        statusText = findViewById(R.id.statusText);
+        btnFloat = findViewById(R.id.btnFloat);
+        btnAccessibility = findViewById(R.id.btnAccessibility);
+        btnOverlay = findViewById(R.id.btnOverlay);
 
-        btnFloat = new Button(this);
-        btnFloat.setText("打开悬浮窗权限");
-        btnFloat.setOnClickListener(v -> requestOverlay());
-
-        btnAccessibility = new Button(this);
-        btnAccessibility.setText("打开无障碍权限");
+        // 无障碍权限按钮
         btnAccessibility.setOnClickListener(v -> {
-            Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-            startActivity(intent);
+            startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
         });
 
-        btnClose = new Button(this);
-        btnClose.setText("关闭悬浮窗");
-        btnClose.setOnClickListener(v -> {
-            stopService(new Intent(this, FloatWindowService.class));
-            updateStatus();
+        // 悬浮窗权限按钮
+        btnOverlay.setOnClickListener(v -> {
+            requestOverlayPermission();
         });
-
-        android.widget.LinearLayout layout = new android.widget.LinearLayout(this);
-        layout.setOrientation(android.widget.LinearLayout.VERTICAL);
-        layout.setGravity(android.view.Gravity.CENTER);
-        layout.setPadding(50, 100, 50, 50);
-        layout.addView(tvStatus);
-        layout.addView(btnFloat);
-        layout.addView(btnAccessibility);
-        layout.addView(btnClose);
-
-        setContentView(layout);
 
         // Android 13+ 通知权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_NOTIFICATION);
+                    new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
         }
     }
 
@@ -75,50 +54,64 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateStatus() {
-        boolean canOverlay = Settings.canDrawOverlays(this);
-        // 无障碍状态检测
-        boolean accessibilityEnabled = isAccessibilityEnabled();
+        boolean overlay = Settings.canDrawOverlays(this);
+        boolean accessibility = isAccessibilityEnabled();
+        boolean serviceRunning = isServiceRunning(FloatWindowService.class);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("悬浮窗：").append(canOverlay ? "已开启喵" : "未开启").append("\n");
-        sb.append("无障碍：").append(accessibilityEnabled ? "已开启喵" : "未开启");
-        tvStatus.setText(sb.toString());
+        sb.append("悬浮窗：").append(overlay ? "已授权" : "未授权").append("\n");
+        sb.append("无障碍：").append(accessibility ? "已开启喵" : "未开启").append("\n");
+        sb.append("悬浮窗服务：").append(serviceRunning ? "运行中" : "未运行");
+        statusText.setText(sb.toString());
 
-        btnFloat.setText(canOverlay ? "悬浮窗已授权" : "打开悬浮窗权限");
+        // 按钮根据状态智能切换
+        if (serviceRunning) {
+            btnFloat.setText("关闭悬浮窗");
+            btnFloat.setOnClickListener(v -> {
+                stopService(new Intent(this, FloatWindowService.class));
+                updateStatus();
+                Toast.makeText(this, "悬浮窗已关闭喵~", Toast.LENGTH_SHORT).show();
+            });
+        } else {
+            btnFloat.setText("开启悬浮窗");
+            btnFloat.setOnClickListener(v -> {
+                if (Settings.canDrawOverlays(this)) {
+                    startFloatService();
+                } else {
+                    Toast.makeText(this, "请先授予悬浮窗权限喵~", Toast.LENGTH_SHORT).show();
+                    requestOverlayPermission();
+                }
+            });
+        }
     }
 
     private boolean isAccessibilityEnabled() {
-        int accessibilityEnabled = 0;
         try {
-            accessibilityEnabled = Settings.Secure.getInt(
-                    getContentResolver(),
-                    Settings.Secure.ACCESSIBILITY_ENABLED);
-        } catch (Exception e) {
-            return false;
-        }
-        if (accessibilityEnabled == 1) {
-            String services = Settings.Secure.getString(
-                    getContentResolver(),
-                    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
-            if (services != null) {
-                return services.contains(getPackageName());
+            int enabled = Settings.Secure.getInt(getContentResolver(), Settings.Secure.ACCESSIBILITY_ENABLED);
+            if (enabled == 1) {
+                String services = Settings.Secure.getString(getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+                return services != null && services.contains(getPackageName());
+            }
+        } catch (Exception ignored) {}
+        return false;
+    }
+
+    private boolean isServiceRunning(Class<?> serviceClass) {
+        android.app.ActivityManager am = (android.app.ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        if (am != null) {
+            for (android.app.ActivityManager.RunningServiceInfo info : am.getRunningServices(Integer.MAX_VALUE)) {
+                if (serviceClass.getName().equals(info.service.getClassName())) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
-    private void requestOverlay() {
-        if (Settings.canDrawOverlays(this)) {
-            // 已有权限，直接启动服务
-            startFloatService();
-        } else {
-            // 跳转系统授权页
-            Intent intent = new Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName())
-            );
-            startActivityForResult(intent, REQUEST_OVERLAY);
-        }
+    private void requestOverlayPermission() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:" + getPackageName()));
+        startActivityForResult(intent, REQUEST_OVERLAY);
     }
 
     private void startFloatService() {
@@ -139,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
             if (Settings.canDrawOverlays(this)) {
                 startFloatService();
             } else {
-                Toast.makeText(this, "需要悬浮窗权限才能显示喵", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "悬浮窗权限被拒绝了喵 T_T", Toast.LENGTH_SHORT).show();
             }
         }
     }
