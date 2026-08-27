@@ -1,5 +1,6 @@
 package com.moe.nyanhelper;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -10,11 +11,15 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.WindowMetrics;
 import android.widget.TextView;
+
 import androidx.core.app.NotificationCompat;
 
 public class FloatWindowService extends Service {
@@ -24,6 +29,11 @@ public class FloatWindowService extends Service {
     private View floatView;
     private WindowManager.LayoutParams params;
 
+    private int statusBarHeight = 0;
+    private int navBarHeight = 0;
+    private int screenW = 1080;
+    private int screenH = 1920;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -31,15 +41,10 @@ public class FloatWindowService extends Service {
         startForeground(1, buildNotification());
 
         wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+        computeScreenAndInsets();
 
-        // ===== 悬浮窗内容 =====
-        TextView tv = new TextView(this);
-        tv.setText("🐱 本喵助手");
-        tv.setTextSize(14);
-        tv.setTextColor(0xFFFFFFFF);
-        tv.setBackgroundColor(0xAAFF69B4);
-        tv.setPadding(30, 20, 30, 20);
-        floatView = tv;
+        // ===== 圆形悬浮窗（inflate XML 布局）=====
+        floatView = LayoutInflater.from(this).inflate(R.layout.float_view, null);
 
         // ===== 布局参数 =====
         params = new WindowManager.LayoutParams(
@@ -51,50 +56,99 @@ public class FloatWindowService extends Service {
                 PixelFormat.TRANSLUCENT
         );
         params.gravity = Gravity.TOP | Gravity.START;
-        params.x = 100;
-        params.y = 300;
+        params.x = 0;
+        params.y = dp(120);
 
         wm.addView(floatView, params);
 
-        // ===== 拖拽 + 边界限制 =====
-        int statusBarHeight = getStatusBarHeight();
-        int navBarHeight = getNavBarHeight();
-        int[] screenSize = getScreenSize();
-        final int[] lastTouchX = {0}, lastTouchY = {0};
-        final int[] lastParamX = {params.x}, lastParamY = {params.y};
+        // ===== 拖拽 + 点击区分 =====
+        floatView.setOnTouchListener(new View.OnTouchListener() {
 
-        floatView.setOnTouchListener((v, event) -> {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    lastTouchX[0] = (int) event.getRawX();
-                    lastTouchY[0] = (int) event.getRawY();
-                    lastParamX[0] = params.x;
-                    lastParamY[0] = params.y;
-                    return true;
+            private float downX, downY;
+            private int startX, startY;
+            private long downTime;
+            private boolean moved = false;
 
-                case MotionEvent.ACTION_MOVE:
-                    int dx = (int) event.getRawX() - lastTouchX[0];
-                    int dy = (int) event.getRawY() - lastTouchY[0];
-                    params.x = lastParamX[0] + dx;
-                    params.y = lastParamY[0] + dy;
+            @Override
+            public boolean onTouch(View v, MotionEvent e) {
+                switch (e.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        downX = e.getRawX();
+                        downY = e.getRawY();
+                        startX = params.x;
+                        startY = params.y;
+                        downTime = System.currentTimeMillis();
+                        moved = false;
+                        return true;
 
-                    // 边界限制
-                    int viewW = floatView.getWidth();
-                    int viewH = floatView.getHeight();
-                    if (viewW == 0) viewW = 200; // 初始未测量时的估计值
-                    if (viewH == 0) viewH = 80;
+                    case MotionEvent.ACTION_MOVE:
+                        int dx = (int) (e.getRawX() - downX);
+                        int dy = (int) (e.getRawY() - downY);
+                        if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+                            moved = true;
+                        }
+                        params.x = startX + dx;
+                        params.y = startY + dy;
 
-                    params.x = Math.max(0, Math.min(params.x, screenSize[0] - viewW));
-                    params.y = Math.max(statusBarHeight, Math.min(params.y, screenSize[1] - viewH - navBarHeight));
+                        // 边界限制
+                        int viewW = floatView.getWidth();
+                        int viewH = floatView.getHeight();
+                        if (viewW == 0) viewW = dp(56);
+                        if (viewH == 0) viewH = dp(56);
 
-                    wm.updateViewLayout(floatView, params);
-                    return true;
+                        params.x = Math.max(0, Math.min(params.x, screenW - viewW));
+                        params.y = Math.max(statusBarHeight, Math.min(params.y, screenH - viewH - navBarHeight));
 
-                case MotionEvent.ACTION_UP:
-                    return true;
+                        wm.updateViewLayout(floatView, params);
+                        return true;
+
+                    case MotionEvent.ACTION_UP:
+                        if (!moved && System.currentTimeMillis() - downTime < 300) {
+                            // 点击 → 打开/回到主界面
+                            openApp();
+                        }
+                        return true;
+                }
+                return false;
             }
-            return false;
         });
+    }
+
+    // ===== 点击悬浮窗 → 打开/回到 MainActivity =====
+    private void openApp() {
+        ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        if (am != null) {
+            for (ActivityManager.AppTask task : am.getAppTasks()) {
+                if (task != null) {
+                    task.moveToFront();
+                    break;
+                }
+            }
+        }
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+    }
+
+    // ===== 屏幕/Insets 计算 =====
+    private void computeScreenAndInsets() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowMetrics m = wm.getCurrentWindowMetrics();
+            Rect b = m.getBounds();
+            screenW = b.width();
+            screenH = b.height();
+        } else {
+            Point p = new Point();
+            wm.getDefaultDisplay().getSize(p);
+            screenW = p.x;
+            screenH = p.y;
+        }
+
+        int sb = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (sb > 0) statusBarHeight = getResources().getDimensionPixelSize(sb);
+
+        int nb = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+        if (nb > 0) navBarHeight = getResources().getDimensionPixelSize(nb);
     }
 
     private int getWindowType() {
@@ -105,33 +159,9 @@ public class FloatWindowService extends Service {
         }
     }
 
-    private int[] getScreenSize() {
-        final int[] size = {1080, 1920};
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Rect bounds = wm.getCurrentWindowMetrics().getBounds();
-            size[0] = bounds.width();
-            size[1] = bounds.height();
-        } else {
-            Point p = new Point();
-            wm.getDefaultDisplay().getSize(p);
-            size[0] = p.x;
-            size[1] = p.y;
-        }
-        return size;
-    }
-
-    private int getStatusBarHeight() {
-        int res = 0;
-        int id = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (id > 0) res = getResources().getDimensionPixelSize(id);
-        return res;
-    }
-
-    private int getNavBarHeight() {
-        int res = 0;
-        int id = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
-        if (id > 0) res = getResources().getDimensionPixelSize(id);
-        return res;
+    private int dp(int v) {
+        return (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, v, getResources().getDisplayMetrics());
     }
 
     @Override
