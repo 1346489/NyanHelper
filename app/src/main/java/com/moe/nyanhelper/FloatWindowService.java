@@ -18,7 +18,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
-import android.widget.TextView;
 
 import androidx.core.app.NotificationCompat;
 
@@ -43,10 +42,9 @@ public class FloatWindowService extends Service {
         wm = (WindowManager) getSystemService(WINDOW_SERVICE);
         computeScreenAndInsets();
 
-        // ===== 圆形悬浮窗（inflate XML 布局）=====
+        // inflate 20dp 圆形悬浮窗
         floatView = LayoutInflater.from(this).inflate(R.layout.float_view, null);
 
-        // ===== 布局参数 =====
         params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -56,12 +54,12 @@ public class FloatWindowService extends Service {
                 PixelFormat.TRANSLUCENT
         );
         params.gravity = Gravity.TOP | Gravity.START;
-        params.x = 0;
-        params.y = dp(120);
+        params.x = dp(60);
+        params.y = dp(200);
 
         wm.addView(floatView, params);
 
-        // ===== 拖拽 + 点击区分 =====
+        // 拖拽 + 点击
         floatView.setOnTouchListener(new View.OnTouchListener() {
 
             private float downX, downY;
@@ -84,17 +82,14 @@ public class FloatWindowService extends Service {
                     case MotionEvent.ACTION_MOVE:
                         int dx = (int) (e.getRawX() - downX);
                         int dy = (int) (e.getRawY() - downY);
-                        if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
-                            moved = true;
-                        }
+                        if (Math.abs(dx) > 6 || Math.abs(dy) > 6) moved = true;
                         params.x = startX + dx;
                         params.y = startY + dy;
 
-                        // 边界限制
                         int viewW = floatView.getWidth();
                         int viewH = floatView.getHeight();
-                        if (viewW == 0) viewW = dp(56);
-                        if (viewH == 0) viewH = dp(56);
+                        if (viewW == 0) viewW = dp(20);
+                        if (viewH == 0) viewH = dp(20);
 
                         params.x = Math.max(0, Math.min(params.x, screenW - viewW));
                         params.y = Math.max(statusBarHeight, Math.min(params.y, screenH - viewH - navBarHeight));
@@ -104,7 +99,6 @@ public class FloatWindowService extends Service {
 
                     case MotionEvent.ACTION_UP:
                         if (!moved && System.currentTimeMillis() - downTime < 300) {
-                            // 点击 → 打开/回到主界面
                             openApp();
                         }
                         return true;
@@ -114,7 +108,6 @@ public class FloatWindowService extends Service {
         });
     }
 
-    // ===== 点击悬浮窗 → 打开/回到 MainActivity =====
     private void openApp() {
         ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         if (am != null) {
@@ -130,7 +123,6 @@ public class FloatWindowService extends Service {
         startActivity(intent);
     }
 
-    // ===== 屏幕/Insets 计算 =====
     private void computeScreenAndInsets() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             WindowMetrics m = wm.getCurrentWindowMetrics();
@@ -143,10 +135,8 @@ public class FloatWindowService extends Service {
             screenW = p.x;
             screenH = p.y;
         }
-
         int sb = getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (sb > 0) statusBarHeight = getResources().getDimensionPixelSize(sb);
-
         int nb = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
         if (nb > 0) navBarHeight = getResources().getDimensionPixelSize(nb);
     }
@@ -160,8 +150,7 @@ public class FloatWindowService extends Service {
     }
 
     private int dp(int v) {
-        return (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, v, getResources().getDisplayMetrics());
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, v, getResources().getDisplayMetrics());
     }
 
     @Override
@@ -172,10 +161,7 @@ public class FloatWindowService extends Service {
     @Override
     public void onDestroy() {
         if (floatView != null && wm != null) {
-            try {
-                wm.removeView(floatView);
-            } catch (Exception ignored) {
-            }
+            try { wm.removeView(floatView); } catch (Exception ignored) {}
             floatView = null;
         }
         super.onDestroy();
@@ -198,10 +184,7 @@ public class FloatWindowService extends Service {
     private void createChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
-                    CHANNEL_ID,
-                    "本喵助手前台服务",
-                    NotificationManager.IMPORTANCE_LOW
-            );
+                    CHANNEL_ID, "本喵助手前台服务", NotificationManager.IMPORTANCE_LOW);
             NotificationManager nm = getSystemService(NotificationManager.class);
             if (nm != null) nm.createNotificationChannel(channel);
         }
