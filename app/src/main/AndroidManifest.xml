@@ -1,32 +1,47 @@
-<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-<application ...>
-    <activity
-        android:name=".MainActivity"
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- 如果 targetSdk >= 34 且用了 foregroundServiceType="dataSync"，建议加这个 -->
+    <!-- 如果不需要 dataSync 类型，下面这行可以删，同时 service 也不要写 foregroundServiceType -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+
+    <application
+        android:allowBackup="true"
         android:theme="@style/Theme.NyanHelper"
-        android:exported="true">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-    </activity>
+        android:label="本喵助手"
+        android:supportsRtl="true">
 
-    <service
-        android:name=".FloatWindowService"
-        android:exported="false"
-        android:foregroundServiceType="dataSync" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.NyanHelper">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
-    <service
-        android:name=".NyanAccessibilityService"
-        android:exported="true"
-        android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
-        <intent-filter>
-            <action android:name="android.permission.accessibilityservice.AccessibilityService" />
-        </intent-filter>
-        <meta-data
-            android:name="android.accessibilityservice"
-            android:resource="@xml/accessibility_service_config" />
-    </service>
-</application>
+        <service
+            android:name=".FloatWindowService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
+        <service
+            android:name=".NyanAccessibilityService"
+            android:exported="true"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+    </application>
+
+</manifest>
