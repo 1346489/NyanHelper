@@ -1,55 +1,91 @@
 package com.moe.nyanhelper;
 
 import android.accessibilityservice.AccessibilityService;
+import android.os.Bundle;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class NyanAccessibilityService extends AccessibilityService {
 
-    // 文字替换映射表（你想替换什么在这里加）
-    private static final java.util.Map<String, String> REPLACE_MAP = new java.util.HashMap<>();
-    static {
-        REPLACE_MAP.put("原文字1", "替换后1");
-        REPLACE_MAP.put("原文字2", "替换后2");
-        // 继续加...
-    }
+    private final Set<Integer> processedNodes = new HashSet<>();
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        if (event.getEventType() != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
-                && event.getEventType() != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+        if (event == null) return;
+
+        int type = event.getEventType();
+        if (type != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
+                && type != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             return;
         }
 
         AccessibilityNodeInfo root = getRootInActiveWindow();
-        if (root != null) {
-            traverseAndReplace(root);
+        if (root == null) return;
+
+        try {
+            List<AccessibilityNodeInfo> editableNodes = new ArrayList<>();
+            findEditableNodes(root, editableNodes);
+
+            for (AccessibilityNodeInfo node : editableNodes) {
+                if (node == null) continue;
+                try {
+                    CharSequence text = node.getText();
+                    if (text == null) continue;
+
+                    String original = text.toString();
+                    int nodeHash = node.hashCode() ^ original.hashCode();
+                    if (processedNodes.contains(nodeHash)) continue;
+
+                    String replaced = NyanConfig.apply(original, this);
+                    if (!replaced.equals(original)) {
+                        Bundle args = new Bundle();
+                        args.putCharSequence(
+                                AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
+                                replaced);
+                        node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args);
+                        processedNodes.add(nodeHash);
+                    }
+                } catch (IllegalStateException ignored) {
+                }
+            }
+        } catch (Exception ignored) {
         }
     }
 
-    private void traverseAndReplace(AccessibilityNodeInfo node) {
-        if (node == null) return;
-
-        // 替换文本内容
-        if (node.getClassName() != null && node.getClassName().toString().contains("TextView")) {
-            CharSequence text = node.getText();
-            if (text != null) {
-                String original = text.toString();
-                if (REPLACE_MAP.containsKey(original)) {
-                    // 注意：需要通过 ACTION_SET_TEXT 或通过 arguments 设置
-                    // 实际替换需要 node.performAction(ACTION_SET_TEXT, bundle)
-                    // 这里仅示意，完整实现见下方说明
+    private void findEditableNodes(AccessibilityNodeInfo root, List<AccessibilityNodeInfo> out) {
+        if (root == null) return;
+        try {
+            if (root.isEditable() && root.getText() != null) {
+                out.add(AccessibilityNodeInfo.obtain(root));
+            }
+            int childCount = root.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                AccessibilityNodeInfo child = root.getChild(i);
+                if (child != null) {
+                    findEditableNodes(child, out);
                 }
             }
-        }
-
-        // 递归遍历子节点
-        for (int i = 0; i < node.getChildCount(); i++) {
-            traverseAndReplace(node.getChild(i));
+        } catch (IllegalStateException ignored) {
         }
     }
 
     @Override
-    public void onInterrupt() {
+    public void onInterrupt() {}
+
+    @Override
+    protected void onServiceConnected() {
+        super.onServiceConnected();
+        processedNodes.clear();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        processedNodes.clear();
     }
 }
