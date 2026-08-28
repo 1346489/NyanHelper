@@ -19,58 +19,57 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Prepare/clean drawable & mipmap icon outputs
-        run: |
-          sudo apt-get update -qq || true
-          sudo apt-get install -y -qq imagemagick || true
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
+      - name: Install ImageMagick
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick
+
+      - name: Generate icons (always, with verification)
+        run: |
+          set -e
+          cd "$GITHUB_WORKSPACE"
+
+          # 清理旧的生成物
+          rm -rf app/src/main/res/mipmap-*
           rm -f app/src/main/res/drawable/nyan_avatar.png
-          rm -f app/src/main/res/drawable/nyan_avatar.xml
-          rm -f app/src/main/res/drawable/ic_launcher_foreground.png
-          rm -f app/src/main/res/drawable/ic_launcher_foreground.xml
           rm -f app/src/main/res/drawable/bg_main.png
-          rm -f app/src/main/res/drawable/bg_main.xml
-          rm -rf app/src/main/res/mipmap-mdpi
-          rm -rf app/src/main/res/mipmap-hdpi
-          rm -rf app/src/main/res/mipmap-xhdpi
-          rm -rf app/src/main/res/mipmap-xxhdpi
-          rm -rf app/src/main/res/mipmap-xxxhdpi
-          rm -rf app/src/main/res/mipmap-anydpi-v26
-          mkdir -p app/src/main/res/drawable
+          rm -f app/src/main/res/drawable-nodpi/ic_launcher_foreground.png
           mkdir -p app/src/main/res/drawable-nodpi
 
-          if [ -f "app_icon.png" ]; then
-            convert app_icon.png -resize 512x512 -background white -gravity center -extent 512x512 app/src/main/res/drawable/nyan_avatar.png
-            cp app/src/main/res/drawable/nyan_avatar.png app/src/main/res/drawable-nodpi/ic_launcher_foreground.png
-            convert app_icon.png -resize 108x108 -background transparent -gravity center -extent 108x108 app/src/main/res/drawable-nodpi/ic_launcher_foreground.png
-            for pair in "mdpi:48" "hdpi:72" "xhdpi:96" "xxhdpi:144" "xxxhdpi:192"; do
-              dir="${pair%%:*}"; size="${pair##*:}"
-              mkdir -p "app/src/main/res/mipmap-${dir}"
-              convert app_icon.png -resize "${size}x${size}" -background transparent -gravity center -extent "${size}x${size}" "app/src/main/res/mipmap-${dir}/ic_launcher.png"
-            done
-            echo "使用 app_icon.png 生成图标/头像"
-          else
-            # 没上传原图时用纯色粉色占位 png，保证编译不缺资源
-            python3 - <<'PY'
-from PIL import Image, ImageDraw
-img = Image.new("RGBA", (512,512), (255,209,220,255))
-d = ImageDraw.Draw(img)
-d.ellipse((120,120,392,392), fill=(255,255,255,255))
-img.save("app/src/main/res/drawable/nyan_avatar.png")
-img.save("app/src/main/res/drawable-nodpi/ic_launcher_foreground.png")
-for d,s in [("mdpi",48),("hdpi",72),("xhdpi",96),("xxhdpi",144),("xxxhdpi",192)]:
-    import os
-    os.makedirs(f"app/src/main/res/mipmap-{d}", exist_ok=True)
-    Image.new("RGBA", (s,s), (255,209,220,255)).save(f"app/src/main/res/mipmap-{d}/ic_launcher.png")
-PY
-            echo "未找到 app_icon.png，使用占位 png"
+          SRC="app_icon.png"
+          if [ ! -f "$SRC" ]; then
+            # 没原图就用纯粉圆占位（base64 内联 PNG，无需依赖）
+            echo "iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAADwdgRKAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAADZ0RVh0U29mdHdhcmUAc2ltc2VsZWN0ZWQgZmlsZSBFbXVsYXRpb25zZUlkc3Vyb3VuZC5uZXQg0tZlAAAAAHZpV0AAAAAAElFTkSuQmCC" | base64 -d > "$SRC"
           fi
 
-          # bg_main.png 占位背景，避免任何 bg_main.xml 引用问题
-          python3 - <<'PY'
-from PIL import Image
-Image.new("RGBA", (1080,1920), (255,240,246,255)).save("app/src/main/res/drawable/bg_main.png")
-PY
+          # 生成 mipmap 各密度图标
+          for pair in "mdpi:48" "hdpi:72" "xhdpi:96" "xxhdpi:144" "xxxhdpi:192"; do
+            dir="${pair%%:*}"; size="${pair##*:}"
+            mkdir -p "app/src/main/res/mipmap-${dir}"
+            convert "$SRC" -resize "${size}x${size}" -background transparent -gravity center -extent "${size}x${size}" "app/src/main/res/mipmap-${dir}/ic_launcher.png"
+          done
+
+          # 生成头像 & 前景
+          convert "$SRC" -resize 512x512 -background white -gravity center -extent 512x512 app/src/main/res/drawable/nyan_avatar.png
+          convert "$SRC" -resize 108x108 -background transparent -gravity center -extent 108x108 app/src/main/res/drawable-nodpi/ic_launcher_foreground.png
+
+          # 生成背景
+          convert -size 1080x1920 gradient:"#FFF0F6"-"#FFE3EC" app/src/main/res/drawable/bg_main.png
+
+          # ===== 验证：列出生成的文件 =====
+          echo "=== Generated files ==="
+          ls -la app/src/main/res/mipmap-*/ic_launcher.png
+          ls -la app/src/main/res/drawable/nyan_avatar.png
+          ls -la app/src/main/res/drawable/bg_main.png
+          ls -la app/src/main/res/drawable-nodpi/ic_launcher_foreground.png
+
+          # ===== 断言：缺一个就直接失败 =====
+          test -f app/src/main/res/mipmap-mdpi/ic_launcher.png || (echo "MISSING mdpi" && exit 1)
+          test -f app/src/main/res/mipmap-xxxhdpi/ic_launcher.png || (echo "MISSING xxxhdpi" && exit 1)
+          test -f app/src/main/res/drawable/nyan_avatar.png || (echo "MISSING nyan_avatar" && exit 1)
+          test -f app/src/main/res/drawable/bg_main.png || (echo "MISSING bg_main" && exit 1)
+          echo "All icon files generated successfully"
 
       - name: Build debug APK
         uses: gradle/gradle-build-action@v3
@@ -85,12 +84,11 @@ PY
         run: |
           VERSION=$(grep "versionName" app/build.gradle | sed 's/.*"\(.*\)".*/\1/')
           echo "VERSION_NAME=$VERSION" >> $GITHUB_OUTPUT
-          echo "Version: $VERSION"
 
       - name: Rename APK
         run: |
           mv app/build/outputs/apk/debug/app-debug.apk \
-             app/build/outputs/apk/debug/NyanHelper-${{ steps.version.outputs.VERSION_NAME }}-debug.apk
+             "app/build/outputs/apk/debug/NyanHelper-${{ steps.version.outputs.VERSION_NAME }}-debug.apk"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
