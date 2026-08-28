@@ -181,14 +181,15 @@ public class FloatWindowService extends Service {
 
     private Notification buildNotif() {
         return new NotificationCompat.Builder(this, CHANNEL)
-                .setContentTitle("本喵助手").setContentText("悬浮窗服务运行中喵~")
+                .setContentTitle(getString(R.string.channel_name))
+                .setContentText(getString(R.string.channel_desc))
                 .setSmallIcon(android.R.drawable.ic_menu_view)
                 .setPriority(NotificationCompat.PRIORITY_LOW).build();
     }
 
     private void createChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel ch = new NotificationChannel(CHANNEL, "本喵助手", NotificationManager.IMPORTANCE_LOW);
+            NotificationChannel ch = new NotificationChannel(CHANNEL, getString(R.string.channel_name), NotificationManager.IMPORTANCE_LOW);
             NotificationManager nm = getSystemService(NotificationManager.class);
             if (nm != null) nm.createNotificationChannel(ch);
         }
