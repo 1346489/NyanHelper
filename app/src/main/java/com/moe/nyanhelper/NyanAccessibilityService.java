@@ -12,80 +12,57 @@ import java.util.Set;
 
 public class NyanAccessibilityService extends AccessibilityService {
 
-    private final Set<Integer> processedNodes = new HashSet<>();
+    private final Set<Integer> seen = new HashSet<>();
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event == null) return;
-
-        int type = event.getEventType();
-        if (type != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
-                && type != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-            return;
-        }
+        int t = event.getEventType();
+        if (t != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED && t != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return;
 
         AccessibilityNodeInfo root = getRootInActiveWindow();
         if (root == null) return;
 
         try {
-            List<AccessibilityNodeInfo> editableNodes = new ArrayList<>();
-            findEditableNodes(root, editableNodes);
-
-            for (AccessibilityNodeInfo node : editableNodes) {
+            List<AccessibilityNodeInfo> list = new ArrayList<>();
+            collect(root, list);
+            for (AccessibilityNodeInfo node : list) {
                 if (node == null) continue;
                 try {
                     CharSequence text = node.getText();
                     if (text == null) continue;
-
-                    String original = text.toString();
-                    int nodeHash = node.hashCode() ^ original.hashCode();
-                    if (processedNodes.contains(nodeHash)) continue;
-
-                    String replaced = NyanConfig.apply(original, this);
-                    if (!replaced.equals(original)) {
+                    String orig = text.toString();
+                    int hash = node.hashCode() ^ orig.hashCode();
+                    if (seen.contains(hash)) continue;
+                    String repl = NyanConfig.apply(orig, this);
+                    if (!repl.equals(orig)) {
                         Bundle args = new Bundle();
-                        args.putCharSequence(
-                                AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
-                                replaced);
+                        args.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, repl);
                         node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args);
-                        processedNodes.add(nodeHash);
+                        seen.add(hash);
                     }
-                } catch (IllegalStateException ignored) {
-                }
+                } catch (IllegalStateException ignored) {}
             }
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
     }
 
-    private void findEditableNodes(AccessibilityNodeInfo root, List<AccessibilityNodeInfo> out) {
+    private void collect(AccessibilityNodeInfo root, List<AccessibilityNodeInfo> out) {
         if (root == null) return;
         try {
-            if (root.isEditable() && root.getText() != null) {
-                out.add(AccessibilityNodeInfo.obtain(root));
+            if (root.isEditable() && root.getText() != null) out.add(AccessibilityNodeInfo.obtain(root));
+            for (int i = 0; i < root.getChildCount(); i++) {
+                AccessibilityNodeInfo c = root.getChild(i);
+                if (c != null) collect(c, out);
             }
-            int childCount = root.getChildCount();
-            for (int i = 0; i < childCount; i++) {
-                AccessibilityNodeInfo child = root.getChild(i);
-                if (child != null) {
-                    findEditableNodes(child, out);
-                }
-            }
-        } catch (IllegalStateException ignored) {
-        }
+        } catch (IllegalStateException ignored) {}
     }
 
     @Override
     public void onInterrupt() {}
 
     @Override
-    protected void onServiceConnected() {
-        super.onServiceConnected();
-        processedNodes.clear();
-    }
+    protected void onServiceConnected() { super.onServiceConnected(); seen.clear(); }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        processedNodes.clear();
-    }
+    public void onDestroy() { super.onDestroy(); seen.clear(); }
 }
