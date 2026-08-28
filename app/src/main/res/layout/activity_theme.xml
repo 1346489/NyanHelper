@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+ <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root"
     android:layout_width="match_parent"
@@ -10,39 +10,42 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="主题"
+        android:text="主题选择"
         android:textSize="22sp"
-        android:textStyle="bold"
         android:textColor="#5B2740"
+        android:textStyle="bold"
         android:gravity="center"
         android:layout_marginBottom="24dp" />
 
     <Button
         android:id="@+id/btnSakura"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="72dp"
         android:layout_marginBottom="16dp"
         android:text="🌸 樱花粉"
         android:textSize="18sp"
+        android:textStyle="bold"
         android:textColor="#5B2740"
         android:background="@drawable/bg_theme_sakura" />
 
     <Button
         android:id="@+id/btnMint"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="72dp"
         android:layout_marginBottom="16dp"
         android:text="🌿 薄荷绿"
         android:textSize="18sp"
+        android:textStyle="bold"
         android:textColor="#2E7D32"
         android:background="@drawable/bg_theme_mint" />
 
     <Button
         android:id="@+id/btnStarry"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="72dp"
         android:text="🌌 星空紫"
         android:textSize="18sp"
+        android:textStyle="bold"
         android:textColor="#FFFFFF"
         android:background="@drawable/bg_theme_starry" />
 

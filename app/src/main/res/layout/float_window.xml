@@ -1,78 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="150dp"
-    android:layout_height="wrap_content">
+    android:id="@+id/float_panel"
+    android:layout_width="120dp"
+    android:layout_height="120dp"
+    android:background="@drawable/bg_float_panel">
 
-    <!-- 特效绘制层（放在最底层，覆盖整个悬浮窗区域） -->
-    <FrameLayout
-        android:id="@+id/effectLayer"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:background="@android:color/transparent" />
+    <!-- 特效层（雪花/流星画在这里）-->
+    <com.moe.nyanhelper.SnowMeteorView
+        android:id="@+id/effectView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-    <!-- 悬浮球/面板（半透明粉色） -->
+    <!-- 面板内容：猫头 + 3 选项 -->
     <LinearLayout
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@drawable/panel_dark_pink_bg"
-        android:padding="10dp">
-
-        <ImageView
-            android:id="@+id/ballIcon"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_gravity="center"
-            android:src="@drawable/icon_ball"
-            android:scaleType="centerCrop"
-            android:background="@drawable/ball_circle"
-            android:contentDescription="本喵悬浮球" />
-
-        <!-- 3 个选项：功能 / 设置 / 主题 -->
-        <TextView
-            android:id="@+id/tabFeatures"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:gravity="center"
-            android:layout_marginTop="8dp"
-            android:text="功能"
-            android:textSize="14sp"
-            android:textColor="#FFFFFF"
-            android:background="@drawable/panel_item_bg" />
+        android:padding="6dp"
+        android:gravity="center">
 
         <TextView
-            android:id="@+id/tabSettings"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:id="@+id/float_ball"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:text="🐱"
+            android:textSize="18sp"
             android:gravity="center"
-            android:layout_marginTop="6dp"
-            android:text="设置"
-            android:textSize="14sp"
-            android:textColor="#FFFFFF"
-            android:background="@drawable/panel_item_bg" />
+            android:layout_marginBottom="2dp"/>
 
-        <TextView
-            android:id="@+id/tabTheme"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:gravity="center"
-            android:layout_marginTop="6dp"
-            android:text="主题"
-            android:textSize="14sp"
-            android:textColor="#FFFFFF"
-            android:background="@drawable/panel_item_bg" />
+            android:weightSum="3">
 
-        <TextView
-            android:id="@+id/tabHide"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:gravity="center"
-            android:layout_marginTop="6dp"
-            android:text="隐藏悬浮"
-            android:textSize="14sp"
-            android:textColor="#FFFFFF"
-            android:background="@drawable/panel_item_bg" />
+            <TextView android:id="@+id/tabFeatures"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="功能"
+                android:textSize="10sp" android:gravity="center"
+                android:padding="2dp"/>
 
+            <TextView android:id="@+id/tabSettings"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="设置"
+                android:textSize="10sp" android:gravity="center"
+                android:padding="2dp"/>
+
+            <TextView android:id="@+id/tabTheme"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="主题"
+                android:textSize="10sp" android:gravity="center"
+                android:padding="2dp"/>
+        </LinearLayout>
     </LinearLayout>
 
 </FrameLayout>
