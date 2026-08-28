@@ -1,422 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:background="@drawable/bg_main"
+    android:fillViewport="true">
 
-    <!-- 动态背景根布局 -->
     <LinearLayout
-        android:id="@+id/bgRoot"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="20dp"
+        android:gravity="center_horizontal">
 
-        <!-- 头像 + 标题（对标第4张图） -->
         <ImageView
             android:id="@+id/avatar"
             android:layout_width="96dp"
             android:layout_height="96dp"
-            android:src="@drawable/nyan_avatar"
+            android:src="@drawable/avatar_main"
             android:scaleType="fitCenter"
+            android:contentDescription="@string/app_name"
             android:background="@drawable/bg_avatar_circle"
-            android:padding="6dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp" />
+            android:padding="6dp" />
 
         <TextView
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="本喵助手"
+            android:text="@string/app_name"
             android:textSize="26sp"
             android:textStyle="bold"
-            android:textColor="@color/primary"
-            android:layout_gravity="center_horizontal"
+            android:textColor="#FF5C8D"
             android:layout_marginTop="8dp" />
 
         <TextView
-            android:id="@+id/slogan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="让文字变得可爱喵~"
-            android:textSize="13sp"
-            android:textColor="#8A7A9A"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp" />
-
-        <!-- 状态卡片 -->
-        <LinearLayout
+            android:id="@+id/status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:text="@string/status_idle"
+            android:textSize="15sp"
+            android:textColor="#553344"
             android:background="@drawable/bg_card_white"
             android:padding="14dp"
-            android:elevation="3dp">
-
-            <TextView
-                android:id="@+id/tvFloatStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="❌ 悬浮窗权限未开启"
-                android:textSize="14sp"
-                android:paddingVertical="5dp" />
-
-            <TextView
-                android:id="@+id/tvAccessStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="❌ 无障碍服务未开启"
-                android:textSize="14sp"
-                android:paddingVertical="5dp" />
-
-            <TextView
-                android:id="@+id/tvServiceStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="⚪ 悬浮窗服务未运行"
-                android:textSize="14sp"
-                android:paddingVertical="5dp" />
-        </LinearLayout>
-
-        <!-- 按钮 -->
-        <Button
-            android:id="@+id/btnFloatToggle"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="开启悬浮窗"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="@color/primary"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="14dp"
+            android:elevation="2dp" />
 
         <Button
-            android:id="@+id/btnAccessOpen"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="去开启无障碍服务"
-            android:textSize="16sp"
-            android:textColor="@color/primary"
-            android:backgroundTint="#FFF0F6"
-            android:layout_marginTop="10dp" />
-
-        <Button
-            android:id="@+id/btnRefresh"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="刷新状态"
-            android:textSize="16sp"
-            android:textColor="#888"
-            android:backgroundTint="#F2F2F2"
-            android:layout_marginTop="10dp" />
-
-        <!-- 三 Tab 导航 -->
-        <LinearLayout
+            android:id="@+id/btnFloat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@drawable/bg_card_white"
-            android:layout_marginTop="16dp"
-            android:padding="6dp">
+            android:text="@string/btn_show_float"
+            android:layout_marginTop="14dp"
+            android:backgroundTint="#FF8FBC"
+            android:textColor="#FFFFFF" />
 
-            <LinearLayout
-                android:id="@+id/tabFunc"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:padding="8dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🐾"
-                    android:textSize="20sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="功能"
-                    android:textSize="13sp"
-                    android:textColor="@color/primary" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/tabSet"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:padding="8dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="⚙️"
-                    android:textSize="20sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="设置"
-                    android:textSize="13sp"
-                    android:textColor="#B0A0B0" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/tabTheme"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:padding="8dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🎨"
-                    android:textSize="20sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="主题"
-                    android:textSize="13sp"
-                    android:textColor="#B0A0B0" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- ===== 页面：功能 ===== -->
-        <ScrollView
-            android:id="@+id/pageFunc"
+        <Button
+            android:id="@+id/btnAccess"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginTop="12dp">
+            android:layout_height="wrap_content"
+            android:text="@string/btn_open_access"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="#FFB6D0"
+            android:textColor="#FFFFFF" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/bg_card_white"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="文字替换功能"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:textColor="@color/primary"
-                    android:layout_marginBottom="8dp" />
-
-                <Switch
-                    android:id="@+id/swAddNya"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:text="结尾加「喵」"
-                    android:textSize="14sp" />
-
-                <View android:layout_width="match_parent" android:layout_height="1dp"
-                    android:background="#EEE" android:layout_marginVertical="4dp" />
-
-                <Switch
-                    android:id="@+id/swMe"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:text="「我」→「本喵」"
-                    android:textSize="14sp" />
-
-                <View android:layout_width="match_parent" android:layout_height="1dp"
-                    android:background="#EEE" android:layout_marginVertical="4dp" />
-
-                <Switch
-                    android:id="@+id/swYou"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:text="「你」→「主人」"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="三个开关可任意组合，效果会叠加喵~"
-                    android:textSize="12sp"
-                    android:textColor="#999"
-                    android:layout_marginTop="10dp" />
-            </LinearLayout>
-        </ScrollView>
-
-        <!-- ===== 页面：设置 ===== -->
-        <ScrollView
-            android:id="@+id/pageSet"
+        <Button
+            android:id="@+id/btnHide"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginTop="12dp"
-            android:visibility="gone">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/bg_card_white"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="悬浮球动效（互斥，只能开一个）"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:textColor="@color/primary"
-                    android:layout_marginBottom="8dp" />
-
-                <Switch
-                    android:id="@+id/swSnow"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:text="❄️ 雪花开关（左上角飘落）"
-                    android:textSize="14sp" />
-
-                <View android:layout_width="match_parent" android:layout_height="1dp"
-                    android:background="#EEE" android:layout_marginVertical="4dp" />
-
-                <Switch
-                    android:id="@+id/swMeteor"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:text="☄️ 流星开关（右上角划过）"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="两个动效同时只能有一个生效，打开一个会自动关闭另一个"
-                    android:textSize="12sp"
-                    android:textColor="#999"
-                    android:layout_marginTop="10dp" />
-            </LinearLayout>
-        </ScrollView>
-
-        <!-- ===== 页面：主题 ===== -->
-        <ScrollView
-            android:id="@+id/pageTheme"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginTop="12dp"
-            android:visibility="gone">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/bg_card_white"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="选择背景主题"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:textColor="@color/primary"
-                    android:layout_marginBottom="12dp" />
-
-                <!-- 粉樱 -->
-                <LinearLayout
-                    android:id="@+id/cardPink"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="12dp"
-                    android:background="@drawable/bg_card_option">
-
-                    <View
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/bg_theme_pink" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="粉樱"
-                        android:textSize="15sp"
-                        android:layout_marginStart="14dp" />
-
-                    <View
-                        android:id="@+id/dotPink"
-                        android:layout_width="14dp"
-                        android:layout_height="14dp"
-                        android:background="@drawable/bg_theme_dot" />
-                </LinearLayout>
-
-                <!-- 星空紫 -->
-                <LinearLayout
-                    android:id="@+id/cardPurple"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="12dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/bg_card_option">
-
-                    <View
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/bg_theme_purple" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="星空紫"
-                        android:textSize="15sp"
-                        android:layout_marginStart="14dp" />
-
-                    <View
-                        android:id="@+id/dotPurple"
-                        android:layout_width="14dp"
-                        android:layout_height="14dp"
-                        android:background="@drawable/bg_theme_dot" />
-                </LinearLayout>
-
-                <!-- 薄荷 -->
-                <LinearLayout
-                    android:id="@+id/cardMint"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="12dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/bg_card_option">
-
-                    <View
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/bg_theme_mint" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="薄荷"
-                        android:textSize="15sp"
-                        android:layout_marginStart="14dp" />
-
-                    <View
-                        android:id="@+id/dotMint"
-                        android:layout_width="14dp"
-                        android:layout_height="14dp"
-                        android:background="@drawable/bg_theme_dot" />
-                </LinearLayout>
-            </LinearLayout>
-        </ScrollView>
+            android:layout_height="wrap_content"
+            android:text="@string/btn_hide_float"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="#DDC7FF"
+            android:textColor="#FFFFFF" />
 
     </LinearLayout>
-</LinearLayout>
+</ScrollView>
