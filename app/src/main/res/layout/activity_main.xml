@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_main"
+    android:background="@drawable/bg_gradient"
     android:fillViewport="true">
 
     <LinearLayout
@@ -14,18 +14,19 @@
 
         <ImageView
             android:id="@+id/avatar"
-            android:layout_width="112dp"
-            android:layout_height="112dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_marginTop="32dp"
             android:src="@drawable/nyan_avatar"
             android:scaleType="fitCenter"
-            android:background="@drawable/bg_avatar_circle"
-            android:padding="6dp" />
+            android:contentDescription="@string/app_name"
+            android:background="@drawable/bg_card_white"
+            android:padding="4dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="本喵助手"
+            android:text="@string/app_name"
             android:textSize="28sp"
             android:textStyle="bold"
             android:textColor="@color/primary"
@@ -34,9 +35,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="让文字变得可爱喵~"
+            android:text="@string/tagline"
             android:textSize="14sp"
-            android:textColor="#888"
+            android:textColor="@color/text_hint"
             android:layout_marginBottom="24dp" />
 
         <LinearLayout
@@ -44,14 +45,13 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@drawable/bg_card_white"
-            android:padding="16dp"
-            android:elevation="4dp">
+            android:padding="16dp">
 
             <TextView
                 android:id="@+id/tvFloatStatus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="❌ 悬浮窗权限未开启"
+                android:text="@string/status_float_off"
                 android:textSize="14sp"
                 android:paddingVertical="6dp" />
 
@@ -59,7 +59,7 @@
                 android:id="@+id/tvAccessStatus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="❌ 无障碍服务未开启"
+                android:text="@string/status_access_off"
                 android:textSize="14sp"
                 android:paddingVertical="6dp" />
 
@@ -67,7 +67,7 @@
                 android:id="@+id/tvServiceStatus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="⚪ 悬浮窗服务未运行"
+                android:text="@string/status_service_off"
                 android:textSize="14sp"
                 android:paddingVertical="6dp" />
         </LinearLayout>
@@ -76,7 +76,7 @@
             android:id="@+id/btnFloatToggle"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:text="开启悬浮窗"
+            android:text="@string/btn_float_on"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
@@ -87,7 +87,7 @@
             android:id="@+id/btnAccessOpen"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:text="去开启无障碍服务"
+            android:text="@string/btn_access"
             android:textSize="16sp"
             android:textColor="@color/primary"
             android:backgroundTint="#FFF0F5"
@@ -97,9 +97,9 @@
             android:id="@+id/btnRefresh"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:text="刷新状态"
+            android:text="@string/btn_refresh"
             android:textSize="16sp"
-            android:textColor="#888"
+            android:textColor="@color/text_hint"
             android:backgroundTint="#F5F5F5"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="32dp" />
