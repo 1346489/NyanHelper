@@ -9,39 +9,32 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="功能"
+        android:text="设置"
         android:textSize="22sp"
         android:textStyle="bold"
         android:textColor="#FF5C8D"
         android:layout_marginBottom="16dp" />
 
     <Switch
-        android:id="@+id/swAddNya"
+        android:id="@+id/swSnow"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:text="结尾加「喵」"
-        android:textSize="15sp" />
+        android:text="雪花特效（悬浮球左上角飘落）"
+        android:textSize="14sp" />
 
     <Switch
-        android:id="@+id/swReplaceYou"
+        android:id="@+id/swMeteor"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:text="「你」→「主人」"
-        android:textSize="15sp" />
-
-    <Switch
-        android:id="@+id/swReplaceMe"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="「我」→「本喵」"
-        android:textSize="15sp" />
+        android:text="流星特效（右上角坠落）"
+        android:textSize="14sp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="提示：以上替换通过无障碍服务全局生效，不限聊天软件"
+        android:text="两个特效互斥：开启一个会自动关闭另一个"
         android:textSize="12sp"
         android:textColor="#888"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="12dp" />
 
 </LinearLayout>

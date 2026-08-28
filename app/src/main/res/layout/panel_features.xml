@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="功能（需开启无障碍服务）"
+        android:textSize="12sp"
+        android:textColor="#888"
+        android:layout_marginBottom="6dp" />
+
+    <Switch
+        android:id="@+id/swAddNya"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="结尾加「喵」"
+        android:textSize="13sp" />
+
+    <View android:layout_width="match_parent" android:layout_height="1dp"
+        android:background="#EEE" android:layout_marginVertical="4dp" />
+
+    <Switch
+        android:id="@+id/swReplaceYou"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="「你」→「主人」"
+        android:textSize="13sp" />
+
+    <View android:layout_width="match_parent" android:layout_height="1dp"
+        android:background="#EEE" android:layout_marginVertical="4dp" />
+
+    <Switch
+        android:id="@+id/swReplaceMe"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="「我」→「本喵」"
+        android:textSize="13sp" />
+
+</LinearLayout>

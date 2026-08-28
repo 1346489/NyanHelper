@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="设置（特效，仅开一个）"
+        android:textSize="12sp"
+        android:textColor="#888"
+        android:layout_marginBottom="6dp" />
+
+    <Switch
+        android:id="@+id/swSnow"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="雪花（悬浮球左上飘落）"
+        android:textSize="13sp" />
+
+    <View android:layout_width="match_parent" android:layout_height="1dp"
+        android:background="#EEE" android:layout_marginVertical="4dp" />
+
+    <Switch
+        android:id="@+id/swMeteor"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="流星（右上坠落）"
+        android:textSize="13sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="提示：两个特效互斥，开启一个自动关闭另一个"
+        android:textSize="11sp"
+        android:textColor="#999"
+        android:layout_marginTop="6dp" />
+
+</LinearLayout>
