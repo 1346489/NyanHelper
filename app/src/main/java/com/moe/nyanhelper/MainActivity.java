@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void update() {
         boolean hasFloat = Settings.canDrawOverlays(this);
-        tvFloat.setText(hasFloat ? "✅ 悬浮窗权限已开启" : "❌ 悬浮窗权限未开启");
+        tvFloat.setText(hasFloat ? R.string.status_float_on : R.string.status_float_off);
 
         boolean hasAccess = false;
         for (android.accessibilityservice.AccessibilityServiceInfo info :
@@ -48,17 +48,17 @@ public class MainActivity extends AppCompatActivity {
                         .getEnabledAccessibilityServiceList(android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_ALL_MASK)) {
             if (info.getId() != null && info.getId().contains("nyanhelper")) hasAccess = true;
         }
-        tvAccess.setText(hasAccess ? "✅ 无障碍服务已开启" : "❌ 无障碍服务未开启");
+        tvAccess.setText(hasAccess ? R.string.status_access_on : R.string.status_access_off);
 
         boolean running = getSharedPreferences("nyan_config", MODE_PRIVATE).getBoolean("float_started", false);
-        tvService.setText(running && hasFloat ? "🟢 悬浮窗服务运行中" : "⚪ 悬浮窗服务未运行");
-        btnToggle.setText(running && hasFloat ? "关闭悬浮窗" : "开启悬浮窗");
+        tvService.setText(running && hasFloat ? R.string.status_service_on : R.string.status_service_off);
+        btnToggle.setText(running && hasFloat ? R.string.btn_float_off : R.string.btn_float_on);
     }
 
     private void toggle() {
         if (!Settings.canDrawOverlays(this)) {
             startActivity(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName())));
-            Toast.makeText(this, "请先授予悬浮窗权限喵~", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.toast_grant_overlay, Toast.LENGTH_LONG).show();
             return;
         }
         Intent intent = new Intent(this, FloatWindowService.class);
@@ -66,12 +66,12 @@ public class MainActivity extends AppCompatActivity {
         if (running) {
             stopService(intent);
             getSharedPreferences("nyan_config", MODE_PRIVATE).edit().putBoolean("float_started", false).apply();
-            Toast.makeText(this, "悬浮窗已关闭喵~", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.toast_float_stopped, Toast.LENGTH_SHORT).show();
         } else {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) startForegroundService(intent);
             else startService(intent);
             getSharedPreferences("nyan_config", MODE_PRIVATE).edit().putBoolean("float_started", true).apply();
-            Toast.makeText(this, "悬浮窗已开启喵~", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.toast_float_started, Toast.LENGTH_SHORT).show();
         }
         update();
     }
