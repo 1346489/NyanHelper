@@ -1,47 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="@drawable/bg_main">
+    android:background="@drawable/bg_theme_sakura">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="功能"
-        android:textSize="22sp"
+        android:text="功能设置"
+        android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="#FF5C8D"
-        android:layout_marginBottom="16dp" />
+        android:textColor="#5B2740"
+        android:gravity="center"
+        android:layout_marginBottom="24dp" />
 
-    <Switch
-        android:id="@+id/swAddNya"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="结尾加「喵」"
-        android:textSize="15sp" />
-
-    <Switch
-        android:id="@+id/swReplaceYou"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="「你」→「主人」"
-        android:textSize="15sp" />
-
-    <Switch
-        android:id="@+id/swReplaceMe"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="「我」→「本喵」"
-        android:textSize="15sp" />
-
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="提示：以上替换通过无障碍服务全局生效，不限聊天软件"
-        android:textSize="12sp"
-        android:textColor="#888"
-        android:layout_marginTop="16dp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="12dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/panel_item_bg">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="句尾加喵"
+            android:textSize="16sp"
+            android:textColor="#5B2740" />
+
+        <Switch
+            android:id="@+id/swAddNya"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="12dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/panel_item_bg">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="你→主人"
+            android:textSize="16sp"
+            android:textColor="#5B2740" />
+
+        <Switch
+            android:id="@+id/swYouToMaster"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="12dp"
+        android:background="@drawable/panel_item_bg">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="我→本喵"
+            android:textSize="16sp"
+            android:textColor="#5B2740" />
+
+        <Switch
+            android:id="@+id/swIToMe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
 </LinearLayout>
