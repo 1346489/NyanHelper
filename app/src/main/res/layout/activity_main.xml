@@ -14,12 +14,13 @@
 
         <ImageView
             android:id="@+id/avatar"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="112dp"
+            android:layout_height="112dp"
             android:layout_marginTop="32dp"
-            android:src="@drawable/avatar"
-            android:background="@drawable/bg_card_white"
-            android:padding="4dp" />
+            android:src="@drawable/nyan_avatar"
+            android:scaleType="fitCenter"
+            android:background="@drawable/bg_avatar_circle"
+            android:padding="6dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -27,7 +28,7 @@
             android:text="本喵助手"
             android:textSize="28sp"
             android:textStyle="bold"
-            android:textColor="#E91E8C"
+            android:textColor="@color/primary"
             android:layout_marginTop="12dp" />
 
         <TextView
@@ -52,7 +53,6 @@
                 android:layout_height="wrap_content"
                 android:text="❌ 悬浮窗权限未开启"
                 android:textSize="14sp"
-                android:textColor="#333"
                 android:paddingVertical="6dp" />
 
             <TextView
@@ -61,7 +61,6 @@
                 android:layout_height="wrap_content"
                 android:text="❌ 无障碍服务未开启"
                 android:textSize="14sp"
-                android:textColor="#333"
                 android:paddingVertical="6dp" />
 
             <TextView
@@ -70,7 +69,6 @@
                 android:layout_height="wrap_content"
                 android:text="⚪ 悬浮窗服务未运行"
                 android:textSize="14sp"
-                android:textColor="#333"
                 android:paddingVertical="6dp" />
         </LinearLayout>
 
@@ -82,7 +80,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#E91E8C"
+            android:backgroundTint="@color/primary"
             android:layout_marginTop="20dp" />
 
         <Button
@@ -91,12 +89,12 @@
             android:layout_height="52dp"
             android:text="去开启无障碍服务"
             android:textSize="16sp"
-            android:textColor="#E91E8C"
+            android:textColor="@color/primary"
             android:backgroundTint="#FFF0F5"
             android:layout_marginTop="12dp" />
 
         <Button
-            android:id="@+id/btnServiceToggle"
+            android:id="@+id/btnRefresh"
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:text="刷新状态"
