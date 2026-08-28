@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
+    <!-- 悬浮球 -->
     <ImageButton
-        android:id="@+id/floatBall"
+        android:id="@+id/float_ball"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:background="@drawable/ball_circle"
@@ -12,7 +14,64 @@
         android:scaleType="centerCrop"
         android:contentDescription="本喵悬浮球" />
 
-    <!-- 特效层：雪花/流星画在这里 -->
+    <!-- 面板（默认隐藏，点击球后显示） -->
+    <LinearLayout
+        android:id="@+id/float_panel"
+        android:layout_width="260dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="70dp"
+        android:orientation="vertical"
+        android:background="@drawable/panel_dark_pink_bg"
+        android:padding="12dp"
+        android:visibility="gone">
+
+        <!-- 左侧菜单 -->
+        <TextView
+            android:id="@+id/tabFeatures"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:text="功能"
+            android:textSize="14sp"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/panel_item_bg" />
+
+        <TextView
+            android:id="@+id/tabSettings"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:text="设置"
+            android:textSize="14sp"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/panel_item_bg" />
+
+        <TextView
+            android:id="@+id/tabTheme"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:text="主题"
+            android:textSize="14sp"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/panel_item_bg" />
+
+        <TextView
+            android:id="@+id/tabHide"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:text="隐藏悬浮"
+            android:textSize="14sp"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/panel_item_bg" />
+
+    </LinearLayout>
+
+    <!-- 特效层 -->
     <View
         android:id="@+id/effectView"
         android:layout_width="match_parent"
