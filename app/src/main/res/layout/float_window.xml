@@ -17,7 +17,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="本喵设置"
+            android:text="@string/panel_title"
             android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="@color/primary"
@@ -28,27 +28,27 @@
             android:id="@+id/sw_add_nya"
             android:layout_width="match_parent"
             android:layout_height="44dp"
-            android:text="结尾加喵字"
+            android:text="@string/sw_add_nya"
             android:textSize="13sp" />
 
         <View android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="#EEE" android:layout_marginVertical="4dp" />
+            android:background="@color/divider" android:layout_marginVertical="4dp" />
 
         <Switch
             android:id="@+id/sw_me"
             android:layout_width="match_parent"
             android:layout_height="44dp"
-            android:text="我 替换为 本喵"
+            android:text="@string/sw_me"
             android:textSize="13sp" />
 
         <View android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="#EEE" android:layout_marginVertical="4dp" />
+            android:background="@color/divider" android:layout_marginVertical="4dp" />
 
         <Switch
             android:id="@+id/sw_you"
             android:layout_width="match_parent"
             android:layout_height="44dp"
-            android:text="你 替换为 主人"
+            android:text="@string/sw_you"
             android:textSize="13sp" />
     </LinearLayout>
 
@@ -62,6 +62,8 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:src="@drawable/nyan_avatar"
+            android:scaleType="fitCenter"
+            android:contentDescription="@string/app_name"
             android:layout_gravity="center" />
     </FrameLayout>
 
