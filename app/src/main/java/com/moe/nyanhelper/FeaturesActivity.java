@@ -13,25 +13,32 @@ public class FeaturesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_features);
 
-        Switch sw1 = findViewById(R.id.swAddNya);
-        Switch sw2 = findViewById(R.id.swReplaceYou);
-        Switch sw3 = findViewById(R.id.swReplaceMe);
+        View rootView = findViewById(R.id.root);
+        if (rootView != null) {
+            ThemeManager.applyTheme(this, rootView);
+        }
 
-        sw1.setChecked(NyanConfig.isAddNya(this));
-        sw2.setChecked(NyanConfig.isReplaceYou(this));
-        sw3.setChecked(NyanConfig.isReplaceMe(this));
+        Switch swAddNya = findViewById(R.id.swAddNya);
+        Switch swYouToMaster = findViewById(R.id.swYouToMaster);
+        Switch swIToMe = findViewById(R.id.swIToMe);
 
-        sw1.setOnCheckedChangeListener((b, c) -> {
-            NyanConfig.setAddNya(this, c);
-            Toast.makeText(this, "已" + (c ? "开启" : "关闭") + "结尾加喵喵~", Toast.LENGTH_SHORT).show();
+        swAddNya.setChecked(NyanConfig.isAddNya(this));
+        swYouToMaster.setChecked(NyanConfig.isYouToMaster(this));
+        swIToMe.setChecked(NyanConfig.isIToMe(this));
+
+        swAddNya.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            NyanConfig.setAddNya(this, isChecked);
+            Toast.makeText(this, "句尾加喵：" + (isChecked ? "开" : "关"), Toast.LENGTH_SHORT).show();
         });
-        sw2.setOnCheckedChangeListener((b, c) -> {
-            NyanConfig.setReplaceYou(this, c);
-            Toast.makeText(this, c ? "「你」→「主人」已开启" : "已关闭替换", Toast.LENGTH_SHORT).show();
+
+        swYouToMaster.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            NyanConfig.setYouToMaster(this, isChecked);
+            Toast.makeText(this, "你→主人：" + (isChecked ? "开" : "关"), Toast.LENGTH_SHORT).show();
         });
-        sw3.setOnCheckedChangeListener((b, c) -> {
-            NyanConfig.setReplaceMe(this, c);
-            Toast.makeText(this, c ? "「我」→「本喵」已开启" : "已关闭替换", Toast.LENGTH_SHORT).show();
+
+        swIToMe.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            NyanConfig.setIToMe(this, isChecked);
+            Toast.makeText(this, "我→本喵：" + (isChecked ? "开" : "关"), Toast.LENGTH_SHORT).show();
         });
     }
 }
