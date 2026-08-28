@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">本喵助手</string>
-    <string name="accessibility_desc">本喵助手无障碍服务，用于聊天文本替换与悬浮面板控制。</string>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#FF9ECD</item>
+        <item name="colorPrimaryDark">#FF6FB6</item>
+        <item name="colorAccent">#FF5FA2</item>
+        <item name="android:windowBackground">#FFF2F8</item>
+        <item name="android:textColor">#5B2740</item>
+    </style>
+
 </resources>
