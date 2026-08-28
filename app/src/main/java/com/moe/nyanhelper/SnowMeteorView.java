@@ -4,151 +4,145 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PixelFormat;
-import android.graphics.PorterDuff;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.util.AttributeSet;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class SnowMeteorView extends SurfaceView implements SurfaceHolder.Callback {
+public class SnowMeteorView extends View {
 
-    private final Paint paint;
-    private final List<float[]> snow = new ArrayList<>();
-    private final List<float[]> meteors = new ArrayList<>();
+    private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Random rand = new Random();
 
-    private boolean running;
-    private Thread thread;
     private boolean snowOn;
     private boolean meteorOn;
-    private int w, h;
+
+    private final List<Snow> snow = new ArrayList<>();
+    private final List<Meteor> meteors = new ArrayList<>();
+
+    private boolean running;
 
     public SnowMeteorView(Context context) {
         super(context);
-        getHolder().addCallback(this);
-        getHolder().setFormat(PixelFormat.TRANSLUCENT);
-        setZOrderOnTop(true);
-        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        init();
+    }
+
+    public SnowMeteorView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
+
+    public SnowMeteorView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    private void init() {
         paint.setColor(Color.WHITE);
-        refreshConfig(NyanConfig.isSnow(context), NyanConfig.isMeteor(context));
     }
 
     public void refreshConfig(boolean snow, boolean meteor) {
         this.snowOn = snow;
         this.meteorOn = meteor;
-        if (!snowOn) snow.clear();
-        if (!meteorOn) meteors.clear();
+
+        if (!snowOn) {
+            snow.clear();
+        }
+        if (!meteorOn) {
+            meteors.clear();
+        }
+
+        if (snowOn || meteorOn) {
+            running = true;
+            invalidate();
+        } else {
+            stopEffect();
+        }
     }
 
     public void stopEffect() {
         running = false;
-        if (thread != null) {
-            try { thread.join(500); } catch (InterruptedException ignored) {}
-            thread = null;
-        }
         snow.clear();
         meteors.clear();
+        invalidate();
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        w = getWidth();
-        h = getHeight();
-        ensureParticles();
-        running = true;
-        thread = new Thread(this::runDraw);
-        thread.start();
-    }
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
 
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        w = width;
-        h = height;
-        ensureParticles();
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        stopEffect();
-    }
-
-    private void ensureParticles() {
-        if (w <= 0 || h <= 0) return;
-        if (snowOn && snow.size() < 30) {
-            for (int i = snow.size(); i < 30; i++) {
-                snow.add(new float[]{
-                        rand.nextFloat() * w,
-                        rand.nextFloat() * h,
-                        1f + rand.nextFloat() * 2f,
-                        120 + rand.nextInt(80)
-                });
-            }
+        if (snowOn) {
+            updateAndDrawSnow(canvas);
         }
-        if (meteorOn && meteors.size() < 2) {
-            for (int i = meteors.size(); i < 2; i++) {
-                meteors.add(new float[]{
-                        rand.nextFloat() * w,
-                        rand.nextFloat() * h * 0.5f,
-                        6f + rand.nextFloat() * 4f,
-                        180 + rand.nextInt(60),
-                        200 + rand.nextInt(55)
-                });
-            }
+        if (meteorOn) {
+            updateAndDrawMeteors(canvas);
+        }
+
+        if (running && (snowOn || meteorOn)) {
+            postInvalidateDelayed(16);
         }
     }
 
-    private void runDraw() {
-        while (running) {
-            SurfaceHolder holder = getHolder();
-            Canvas canvas = null;
-            try {
-                canvas = holder.lockCanvas();
-                if (canvas == null) continue;
-                synchronized (holder) {
-                    canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-                    if (snowOn) drawSnow(canvas);
-                    if (meteorOn) drawMeteor(canvas);
-                }
-            } finally {
-                if (canvas != null) {
-                    try { holder.unlockCanvasAndPost(canvas); } catch (Exception ignored) {}
-                }
-            }
-            try { Thread.sleep(30); } catch (InterruptedException e) { running = false; }
-        }
-    }
+    private void updateAndDrawSnow(Canvas canvas) {
+        int w = getWidth();
+        int h = getHeight();
+        if (w == 0 || h == 0) return;
 
-    private void drawSnow(Canvas canvas) {
+        while (snow.size() < 40) {
+            snow.add(new Snow(rand.nextFloat() * w, rand.nextFloat() * h));
+        }
+
         paint.setColor(Color.WHITE);
-        paint.setAlpha(220);
-        for (float[] p : snow) {
-            canvas.drawCircle(p[0], p[1], 2f + p[2] * 0.3f, paint);
-            p[1] += p[2];
-            p[0] += 0.3f;
-            if (p[1] > h) {
-                p[1] = -10;
-                p[0] = rand.nextFloat() * Math.max(w, 1);
+        for (Snow s : snow) {
+            s.y += s.speed;
+            s.x += Math.sin(s.y / 40f) * 0.6f;
+            if (s.y > h) {
+                s.y = -10;
+                s.x = rand.nextFloat() * w;
             }
+            canvas.drawCircle(s.x, s.y, s.r, paint);
         }
     }
 
-    private void drawMeteor(Canvas canvas) {
-        paint.setColor(Color.WHITE);
-        for (float[] m : meteors) {
-            paint.setAlpha((int) m[4]);
-            canvas.drawLine(m[0], m[1], m[0] - 18, m[1] + 8, paint);
-            canvas.drawCircle(m[0], m[1], 2f, paint);
-            m[0] += m[2];
-            m[1] += m[2] * 0.45f;
-            m[4] -= 4;
-            if (m[0] > w || m[1] > h || m[4] <= 0) {
-                m[0] = rand.nextFloat() * Math.max(w, 1) * 0.8f;
-                m[1] = -20;
-                m[4] = 180 + rand.nextInt(60);
+    private void updateAndDrawMeteors(Canvas canvas) {
+        int w = getWidth();
+        int h = getHeight();
+        if (w == 0 || h == 0) return;
+
+        while (meteors.size() < 3) {
+            meteors.add(new Meteor(rand.nextFloat() * w, rand.nextFloat() * h * 0.5f));
+        }
+
+        paint.setColor(Color.argb(220, 255, 220, 255));
+        for (Meteor m : meteors) {
+            m.x -= m.speed;
+            m.y += m.speed * 0.4f;
+            if (m.x < -100 || m.y > h + 100) {
+                m.x = w + rand.nextFloat() * w;
+                m.y = rand.nextFloat() * h * 0.5f;
             }
+            canvas.drawLine(m.x, m.y, m.x + 18, m.y - 8, paint);
+        }
+    }
+
+    static class Snow {
+        float x, y, speed, r;
+        Snow(float x, float y) {
+            this.x = x;
+            this.y = y;
+            this.speed = 1f + new Random().nextFloat() * 2f;
+            this.r = 1.5f + new Random().nextFloat() * 2.5f;
+        }
+    }
+
+    static class Meteor {
+        float x, y, speed;
+        Meteor(float x, float y) {
+            this.x = x;
+            this.y = y;
+            this.speed = 6f + new Random().nextFloat() * 4f;
         }
     }
 }
