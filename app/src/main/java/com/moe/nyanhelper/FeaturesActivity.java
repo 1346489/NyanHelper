@@ -1,5 +1,6 @@
 package com.moe.nyanhelper;
 
+import android.view.View;
 import android.os.Bundle;
 import android.widget.Switch;
 import android.widget.Toast;
