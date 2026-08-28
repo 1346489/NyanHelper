@@ -1,46 +1,45 @@
 # 本喵助手 2.0
 
-让文字变得可爱喵~ 的 Android 悬浮窗应用。
-
-## 图片映射（你上传 5 张原图 → 放进 raw/ 目录）
-
-| 文件 | 对应 | 用途 |
-|------|------|------|
-| `raw/01_app_icon.png` | 第1张图 | **应用图标** |
-| `raw/02_ball_icon.png` | 第2张图 | **悬浮球图标**（代码裁成圆形，完美覆盖） |
-| `raw/03_main_bg.png` | 第3张图 | 主界面背景（可选，不传则用粉色渐变） |
-| `raw/05_main_avatar.png` | 第5张图 | **主界面头像** |
-
-> 第4张图是「界面设计参考」（主界面样子照它做），不是资源文件。
-
-## 手机部署步骤
-
-1. 把上面 4 个文件传到仓库 `raw/` 目录（第4张不用传）
-2. 在电脑/CI 跑 `python3 gen_icons.py`，自动切出全套图标到 `res/`
-3. 如果没有电脑，直接在 `res/drawable/` 上传 3 张图并命名为：
-   - `ic_launcher.png`（第1张，应用图标）
-   - `avatar_main.png`（第5张，主界面头像）
-   - `icon_ball.png`（第2张，悬浮球，任意尺寸会被裁圆）
-4. push 后 GitHub Actions 自动编译，下载 `NyanHelper-2.0-debug.apk`
+Android 悬浮窗助手：萌系 UI + 全局文本替换（无障碍）+ 动态雪花/流星特效 + 三主题切换。
 
 ## 功能
+- 悬浮球（120×120，不遮挡屏幕），点击展开面板
+- 面板 3 选项：**功能 / 设置 / 主题**（点击跳转对应页面）
+- 功能页：句尾加喵 / 你→主人 / 我→本喵（走无障碍，不限聊天软件）
+- 设置页：**只有雪花特效 + 流星特效**（互斥，动态绘制）
+- 主题页：樱花粉 / 薄荷绿 / 星空紫（三背景，存 SharedPreferences）
 
-### 悬浮球（圆形，可拖动，松手贴边）
-点击展开三页面板：
+## 工程结构
+```
+app/src/main/
+├── java/com/moe/nyanhelper/
+│   ├── NyanConfig.java          配置中心（所有开关 + 文本替换 apply）
+│   ├── ThemeManager.java        主题切换
+│   ├── SnowMeteorView.java      雪花/流星特效（SurfaceView 子线程绘制）
+│   ├── FloatWindowService.java  悬浮窗服务（前台服务 + WindowManager）
+│   ├── MainActivity.java        主界面
+│   ├── FeaturesActivity.java    功能页（3 开关）
+│   ├── SettingsActivity.java    设置页（雪花/流星）
+│   ├── ThemeActivity.java       主题页
+│   └── NyanAccessibilityService.java  无障碍文本替换
+└── res/
+    ├── layout/  float_window + 4 个 activity
+    ├── drawable/ 背景/形状资源
+    ├── values/  strings/themes（AppTheme 只在此定义，避免重复）
+    └── xml/     accessibility_service_config
+```
 
-| 页面 | 内容 |
-|------|------|
-| **功能** | 3 个开关：① 结尾加「喵」②「你」→「主人」③「我」→「本喵」（通过无障碍服务全局生效，不限聊天软件） |
-| **设置** | 雪花开关（左上角飘落，动态）+ 流星开关（右上角坠落，动态），**两个互斥，只能开一个** |
-| **主题** | 3 种背景色：① 樱花粉 ② 薄荷绿 ③ 星空紫 |
+## 部署
+1. 上传 4 张图到 `app/src/main/res/drawable/`：
+   - `ic_launcher.png`（应用图标）
+   - `avatar_main.png`（主界面头像）
+   - `icon_ball.png`（悬浮球）
+   - 三主题背景可选覆盖 `bg_theme_sakura/mint/starry`（已有 xml 渐变兜底）
+2. Commit & push → GitHub Actions 自动构建 → 下载 APK
+3. 安装后：主界面点「启动悬浮窗/特效」→ 授权悬浮窗权限 → 无障碍设置里开启「本喵助手」
 
-### 主界面
-- 头像 + 标题 + 状态卡片（悬浮窗权限 / 无障碍服务 / 服务运行）
-- 三个入口按钮：功能 / 设置 / 主题
-
-## 技术要点
-- 文字替换走 `AccessibilityService`，对任意 App 的输入框生效（微信/QQ/任意聊天软件）
-- 雪花/流星是 `EffectOverlay`（独立 WindowManager 层，`postDelayed` 自循环动画）
-- 悬浮球 `centerCrop` + `clipToOutline` 保证图片圆形完美覆盖
-- 版本：versionCode 2 / versionName "2.0"
-- 编译：AGP 8.3.2 + Gradle 8.4 + JDK 17 + SDK 34
+## 校验
+本地运行（不依赖 Android SDK）：
+```bash
+python3 verify.py
+```
