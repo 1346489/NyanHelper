@@ -1,5 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">本喵助手</string>
-    <string name="accessibility_desc">本喵助手无障碍服务，用于聊天文本替换与悬浮面板控制。</string>
+    <string name="app_name">NyanHelper</string>
+
+    <string name="main_title">喵喵助手</string>
+    <string name="btn_open_features">功能</string>
+    <string name="btn_open_settings">设置</string>
+    <string name="btn_open_theme">主题</string>
+    <string name="btn_enable_access">开启无障碍</string>
+    <string name="btn_enable_float">开启悬浮窗</string>
+
+    <string name="features_title">功能开关</string>
+    <string name="switch_add_nya">添加喵后缀</string>
+    <string name="switch_you_master">你 → 主人</string>
+    <string name="switch_me_nyan">我 → 喵/本喵</string>
+
+    <string name="settings_title">设置</string>
+    <string name="switch_snow">飘雪特效</string>
+    <string name="switch_meteor">流星特效</string>
+
+    <string name="theme_title">主题</string>
+    <string name="theme_sakura">樱粉</string>
+    <string name="theme_mint">薄荷</string>
+    <string name="theme_starry">星空</string>
 </resources>
