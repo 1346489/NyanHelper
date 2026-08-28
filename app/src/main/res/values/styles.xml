@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- 留空也可以，或者放其他非重复 style -->
+    <!-- AppTheme 统一定义在 themes.xml，这里不再重复，避免 Duplicate resources -->
 </resources>
