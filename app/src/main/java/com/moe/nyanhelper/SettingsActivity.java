@@ -1,6 +1,7 @@
 package com.moe.nyanhelper;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -20,20 +21,38 @@ public class SettingsActivity extends AppCompatActivity {
 
         Switch swSnow = findViewById(R.id.swSnow);
         Switch swMeteor = findViewById(R.id.swMeteor);
+        Switch swReplaceYou = findViewById(R.id.swReplaceYou);
+        Switch swReplaceMe = findViewById(R.id.swReplaceMe);
 
         swSnow.setChecked(NyanConfig.isSnow(this));
         swMeteor.setChecked(NyanConfig.isMeteor(this));
+        swReplaceYou.setChecked(NyanConfig.isReplaceYou(this));
+        swReplaceMe.setChecked(NyanConfig.isReplaceMe(this));
 
         swSnow.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                NyanConfig.setMeteor(this, false);
+                swMeteor.setChecked(false);
+            }
             NyanConfig.setSnow(this, isChecked);
-            swMeteor.setChecked(NyanConfig.isMeteor(this));
-            Toast.makeText(this, "雪花：" + (isChecked ? "开" : "关"), Toast.LENGTH_SHORT).show();
         });
 
         swMeteor.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                NyanConfig.setSnow(this, false);
+                swSnow.setChecked(false);
+            }
             NyanConfig.setMeteor(this, isChecked);
-            swSnow.setChecked(NyanConfig.isSnow(this));
-            Toast.makeText(this, "流星：" + (isChecked ? "开" : "关"), Toast.LENGTH_SHORT).show();
+        });
+
+        swReplaceYou.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            NyanConfig.setReplaceYou(this, isChecked);
+            Toast.makeText(this, "你→主人：" + (isChecked ? "开" : "关"), Toast.LENGTH_SHORT).show();
+        });
+
+        swReplaceMe.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            NyanConfig.setReplaceMe(this, isChecked);
+            Toast.makeText(this, "我→本喵：" + (isChecked ? "开" : "关"), Toast.LENGTH_SHORT).show();
         });
     }
 }
