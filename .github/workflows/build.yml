@@ -18,59 +18,77 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-          cache: gradle
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
-      # ===== 自动从 app_icon.png 生成全套图标 =====
-      - name: Check icon
-        id: check_icon
+      - name: Generate icons from app_icon.png
         run: |
+          set -e
+          mkdir -p app/src/main/res/drawable
+          mkdir -p app/src/main/res/drawable-nodpi
+
+          # 清理可能重复的旧资源/旧名
+          rm -f app/src/main/res/drawable/bg_main.xml
+          rm -f app/src/main/res/drawable/nyan_avatar.xml
+          rm -f app/src/main/res/drawable/ic_launcher_foreground.xml
+          rm -f app/src/main/res/drawable/ic_launcher_background.xml
+          rm -f app/src/main/res/drawable/avatar.xml
+          rm -f app/src/main/res/drawable/avatar.png
+          rm -f app/src/main/res/drawable/ic_nyan_avatar.xml
+          rm -f app/src/main/res/drawable/ic_nyan_avatar.png
+
+          rm -f app/src/main/res/drawable-nodpi/ic_launcher_foreground.xml
+          rm -f app/src/main/res/drawable-nodpi/ic_launcher_background.xml
+
+          rm -rf app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+          rm -rf app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+          rm -f app/src/main/res/mipmap-*/ic_launcher_foreground.png
+          rm -f app/src/main/res/mipmap-*/ic_launcher_round.png
+          rm -f app/src/main/res/mipmap-*/ic_launcher_background.png
+
           if [ -f "app_icon.png" ]; then
-            echo "HAS_ICON=true" >> $GITHUB_OUTPUT
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq imagemagick
+
+            # 应用背景图：原图做窗口背景（png）
+            convert app_icon.png -resize 1024x1024 -background "#FFF6FA" -gravity center -extent 1024x1024 app/src/main/res/drawable/bg_main.png
+
+            # 头像/前景用原图
+            convert app_icon.png -resize 512x512 -background white -gravity center -extent 512x512 app/src/main/res/drawable/nyan_avatar.png
+            cp app/src/main/res/drawable/nyan_avatar.png app/src/main/res/drawable-nodpi/ic_launcher_foreground.png
+            cp app/src/main/res/drawable/nyan_avatar.png app/src/main/res/drawable/ic_launcher_foreground.png
+
+            for pair in "mdpi:48" "hdpi:72" "xhdpi:96" "xxhdpi:144" "xxxhdpi:192"; do
+              dir="${pair%%:*}"
+              size="${pair##*:}"
+              mkdir -p "app/src/main/res/mipmap-${dir}"
+              convert app_icon.png -resize "${size}x${size}" -background transparent -gravity center -extent "${size}x${size}" "app/src/main/res/mipmap-${dir}/ic_launcher.png"
+            done
+            echo "使用 app_icon.png 生成图标"
           else
-            echo "HAS_ICON=false" >> $GITHUB_OUTPUT
+            echo "未找到 app_icon.png，请上传仓库根目录"
+            exit 1
           fi
 
-      - name: Install ImageMagick
-        if: steps.check_icon.outputs.HAS_ICON == 'true'
-        run: sudo apt-get update && sudo apt-get install -y imagemagick
+      - name: Build debug APK
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: 8.2
+          arguments: assembleDebug
+          build-root-directory: app
 
-      - name: Generate icons
-        if: steps.check_icon.outputs.HAS_ICON == 'true'
-        run: |
-          mkdir -p app/src/main/res/drawable
-          convert app_icon.png -resize 512x512 -background white -gravity center -extent 512x512 app/src/main/res/drawable/nyan_app_icon.png
-          cp app/src/main/res/drawable/nyan_app_icon.png app/src/main/res/drawable/nyan_avatar.png
-          convert app_icon.png -resize 108x108 -background transparent -gravity center -extent 108x108 app/src/main/res/drawable/ic_launcher_foreground.png
-          for pair in "mdpi:48" "hdpi:72" "xhdpi:96" "xxhdpi:144" "xxxhdpi:192"; do
-            dir="${pair%%:*}"; size="${pair##*:}"
-            mkdir -p "app/src/main/res/mipmap-${dir}"
-            convert app_icon.png -resize "${size}x${size}" -background transparent -gravity center -extent "${size}x${size}" "app/src/main/res/mipmap-${dir}/ic_launcher.png"
-          done
-          echo "图标生成完成"
-
-      - name: Verify icons
-        if: steps.check_icon.outputs.HAS_ICON == 'true'
-        run: |
-          ls -la app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
-          ls -la app/src/main/res/drawable/nyan_avatar.png
-      # ==========================================
-
-      - name: Extract version
+      - name: Get version
         id: version
         run: |
           VERSION=$(grep "versionName" app/build.gradle | sed 's/.*"\(.*\)".*/\1/')
           echo "VERSION_NAME=$VERSION" >> $GITHUB_OUTPUT
-
-      - name: Build debug APK
-        run: ./gradlew assembleDebug --no-daemon
+          echo "Version: $VERSION"
 
       - name: Rename APK
         run: |
           mv app/build/outputs/apk/debug/app-debug.apk \
-             "app/build/outputs/apk/debug/NyanHelper-${{ steps.version.outputs.VERSION_NAME }}-debug.apk"
+             app/build/outputs/apk/debug/NyanHelper-${{ steps.version.outputs.VERSION_NAME }}-debug.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
