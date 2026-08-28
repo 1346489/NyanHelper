@@ -1,80 +1,78 @@
 package com.moe.nyanhelper;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView tvService;
+    private Button btnFeatures, btnSettings, btnTheme, btnService;
+    private TextView tvStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ThemeManager.apply(this, null); // 仅初始化，下面 setContentView 后用 root
         setContentView(R.layout.activity_main);
+        ThemeManager.apply(this, findViewById(R.id.root));
 
-        // 应用主题背景
-        View rootView = findViewById(R.id.root);
-        if (rootView != null) {
-            ThemeManager.applyTheme(this, rootView);
-        }
+        tvStatus = findViewById(R.id.tvStatus);
+        btnFeatures = findViewById(R.id.btnFeatures);
+        btnSettings = findViewById(R.id.btnSettings);
+        btnTheme = findViewById(R.id.btnTheme);
+        btnService = findViewById(R.id.btnService);
 
-        tvService = findViewById(R.id.tvService);
-        TextView btnFeatures = findViewById(R.id.btnFeatures);
-        TextView btnSettings = findViewById(R.id.btnSettings);
-        TextView btnTheme = findViewById(R.id.btnTheme);
-        TextView btnStart = findViewById(R.id.btnStart);
+        btnFeatures.setOnClickListener(v -> startActivity(new Intent(this, FeaturesActivity.class)));
+        btnSettings.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
+        btnTheme.setOnClickListener(v -> startActivity(new Intent(this, ThemeActivity.class)));
 
-        updateServiceStatus();
-
-        btnFeatures.setOnClickListener(v -> {
-            startActivity(new Intent(this, FeaturesActivity.class));
-        });
-
-        btnSettings.setOnClickListener(v -> {
-            startActivity(new Intent(this, SettingsActivity.class));
-        });
-
-        btnTheme.setOnClickListener(v -> {
-            startActivity(new Intent(this, ThemeActivity.class));
-        });
-
-        btnStart.setOnClickListener(v -> {
-            if (!NyanConfig.isServiceRunning(this)) {
-                // 跳转到无障碍设置页面
-                Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                startActivity(intent);
-                Toast.makeText(this, "请在无障碍设置里找到「本喵助手」并开启", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(this, "本喵助手已在运行中~", Toast.LENGTH_SHORT).show();
+        btnService.setOnClickListener(v -> {
+            if (!hasOverlayPermission()) {
+                Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivity(i);
+                return;
             }
+            if (NyanConfig.isServiceRunning(this)) stopFloat();
+            else startFloat();
         });
+
+        updateStatus();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        updateServiceStatus();
-        // 每次返回刷新主题
-        View rootView = findViewById(R.id.root);
-        if (rootView != null) {
-            ThemeManager.applyTheme(this, rootView);
-        }
+        updateStatus();
     }
 
-    private void updateServiceStatus() {
-        if (tvService != null) {
-            tvService.setText(
-                NyanConfig.isServiceRunning(this) ? "● 服务运行中" : "○ 服务未运行"
-            );
-            tvService.setTextColor(
-                NyanConfig.isServiceRunning(this) ? 0xFF4CAF50 : 0xFF999999
-            );
-        }
+    private void updateStatus() {
+        boolean running = NyanConfig.isServiceRunning(this);
+        tvStatus.setText(running ? "● 悬浮窗运行中" : "○ 服务未运行");
+        tvStatus.setTextColor(running ? 0xFF4CAF50 : 0xFF999999);
+        btnService.setText(running ? "关闭悬浮窗" : "启动悬浮窗");
+    }
+
+    private void startFloat() {
+        Intent intent = new Intent(this, FloatService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(intent);
+        else startService(intent);
+        // FloatService.onCreate 内会 setServiceRunning(true)
+        updateStatus();
+    }
+
+    private void stopFloat() {
+        stopService(new Intent(this, FloatService.class));
+        NyanConfig.setServiceRunning(this, false);
+        updateStatus();
+    }
+
+    private boolean hasOverlayPermission() {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(this);
     }
 }

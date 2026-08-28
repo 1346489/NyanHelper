@@ -2,55 +2,41 @@ package com.moe.nyanhelper;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.Button;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 public class ThemeActivity extends AppCompatActivity {
+
+    private Button btnSakura, btnMint, btnStarry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_theme);
+        ThemeManager.apply(this, findViewById(R.id.root));
 
-        View rootView = findViewById(R.id.root);
-        if (rootView != null) {
-            ThemeManager.applyTheme(this, rootView);
-        }
+        btnSakura = findViewById(R.id.btnSakura);
+        btnMint = findViewById(R.id.btnMint);
+        btnStarry = findViewById(R.id.btnStarry);
+        updateButtons();
 
-        TextView btnSakura = findViewById(R.id.btnSakura);
-        TextView btnMint = findViewById(R.id.btnMint);
-        TextView btnStarry = findViewById(R.id.btnStarry);
-
-        updateSelection(btnSakura, btnMint, btnStarry);
-
-        btnSakura.setOnClickListener(v -> {
-            NyanConfig.setTheme(this, NyanConfig.THEME_SAKURA);
-            updateSelection(btnSakura, btnMint, btnStarry);
-            ThemeManager.applyTheme(this, rootView);
-            Toast.makeText(this, "已切换：樱花粉", Toast.LENGTH_SHORT).show();
-        });
-
-        btnMint.setOnClickListener(v -> {
-            NyanConfig.setTheme(this, NyanConfig.THEME_MINT);
-            updateSelection(btnSakura, btnMint, btnStarry);
-            ThemeManager.applyTheme(this, rootView);
-            Toast.makeText(this, "已切换：薄荷绿", Toast.LENGTH_SHORT).show();
-        });
-
-        btnStarry.setOnClickListener(v -> {
-            NyanConfig.setTheme(this, NyanConfig.THEME_STARRY);
-            updateSelection(btnSakura, btnMint, btnStarry);
-            ThemeManager.applyTheme(this, rootView);
-            Toast.makeText(this, "已切换：星空紫", Toast.LENGTH_SHORT).show();
-        });
+        btnSakura.setOnClickListener(v -> { setTheme(NyanConfig.THEME_SAKURA, "樱花粉"); });
+        btnMint.setOnClickListener(v -> { setTheme(NyanConfig.THEME_MINT, "薄荷绿"); });
+        btnStarry.setOnClickListener(v -> { setTheme(NyanConfig.THEME_STARRY, "星空紫"); });
     }
 
-    private void updateSelection(TextView btnSakura, TextView btnMint, TextView btnStarry) {
-        int theme = NyanConfig.getTheme(this);
-        btnSakura.setAlpha(theme == NyanConfig.THEME_SAKURA ? 1.0f : 0.5f);
-        btnMint.setAlpha(theme == NyanConfig.THEME_MINT ? 1.0f : 0.5f);
-        btnStarry.setAlpha(theme == NyanConfig.THEME_STARRY ? 1.0f : 0.5f);
+    private void setTheme(int theme, String name) {
+        NyanConfig.setTheme(this, theme);
+        ThemeManager.apply(this, findViewById(R.id.root));
+        updateButtons();
+        Toast.makeText(this, "已切换：" + name, Toast.LENGTH_SHORT).show();
+    }
+
+    private void updateButtons() {
+        int t = NyanConfig.getTheme(this);
+        btnSakura.setAlpha(t == NyanConfig.THEME_SAKURA ? 1.0f : 0.5f);
+        btnMint.setAlpha(t == NyanConfig.THEME_MINT ? 1.0f : 0.5f);
+        btnStarry.setAlpha(t == NyanConfig.THEME_STARRY ? 1.0f : 0.5f);
     }
 }
