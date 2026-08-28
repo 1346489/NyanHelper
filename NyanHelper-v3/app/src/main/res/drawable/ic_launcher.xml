@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- 占位：上传第1张猫耳少女图后删除本文件，改为 ic_launcher.png -->
+    <path android:fillColor="#FFD1E8" android:pathData="M0,0 L108,0 L108,108 L0,108 Z" />
+    <path android:fillColor="#FF69B4" android:pathData="M54,28 C72,28 84,44 84,62 C84,80 72,92 54,92 C36,92 24,80 24,62 C24,44 36,28 54,28 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M42,52 m-7,0 a7,9 0 1,1 14,0 a7,9 0 1,1 -14,0" />
+    <path android:fillColor="#FFFFFF" android:pathData="M66,52 m-7,0 a7,9 0 1,1 14,0 a7,9 0 1,1 -14,0" />
+    <path android:fillColor="#D81B60" android:pathData="M44,56 m-3,0 a3,4 0 1,1 6,0 a3,4 0 1,1 -6,0" />
+    <path android:fillColor="#D81B60" android:pathData="M64,56 m-3,0 a3,4 0 1,1 6,0 a3,4 0 1,1 -6,0" />
+    <path android:strokeColor="#D81B60" android:strokeWidth="2.5" android:fillColor="#00000000" android:pathData="M48,72 Q54,78 60,72" />
+    <path android:fillColor="#FF8FBC" android:pathData="M34,64 A8,5 0 1,1 46,64 A8,5 0 1,1 34,64" />
+    <path android:fillColor="#FF8FBC" android:pathData="M62,64 A8,5 0 1,1 74,64 A8,5 0 1,1 62,64" />
+    <!-- 猫耳 -->
+    <path android:fillColor="#FF69B4" android:pathData="M30,40 L22,18 L46,36 Z" />
+    <path android:fillColor="#FF69B4" android:pathData="M78,40 L86,18 L62,36 Z" />
+</vector>

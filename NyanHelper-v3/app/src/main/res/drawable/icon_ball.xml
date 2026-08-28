@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+    <!-- 占位：上传第2张猫耳少女图后删除本文件，改为 icon_ball.png -->
+    <!-- 圆形区域，ImageView 用 centerCrop 铺满，完美覆盖 -->
+    <path android:fillColor="#FFD1E8" android:pathData="M0,0 L64,0 L64,64 L0,64 Z" />
+    <path android:fillColor="#FF69B4" android:pathData="M32,12 C44,12 52,22 52,34 C52,46 44,54 32,54 C20,54 12,46 12,34 C12,22 20,12 32,12 Z" />
+    <!-- 猫耳 -->
+    <path android:fillColor="#FF1493" android:pathData="M18,22 L12,6 L28,18 Z" />
+    <path android:fillColor="#FF1493" android:pathData="M46,22 L52,6 L36,18 Z" />
+    <!-- 眼睛 -->
+    <path android:fillColor="#FFFFFF" android:pathData="M24,30 m-4,0 a4,5 0 1,1 8,0 a4,5 0 1,1 -8,0" />
+    <path android:fillColor="#FFFFFF" android:pathData="M40,30 m-4,0 a4,5 0 1,1 8,0 a4,5 0 1,1 -8,0" />
+    <path android:fillColor="#D81B60" android:pathData="M25,32 m-1.5,0 a1.5,2 0 1,1 3,0 a1.5,2 0 1,1 -3,0" />
+    <path android:fillColor="#D81B60" android:pathData="M39,32 m-1.5,0 a1.5,2 0 1,1 3,0 a1.5,2 0 1,1 -3,0" />
+    <!-- 腮红 -->
+    <path android:fillColor="#FFA6C9" android:alpha="0.8" android:pathData="M18,38 A5,3 0 1,1 26,38 A5,3 0 1,1 18,38" />
+    <path android:fillColor="#FFA6C9" android:alpha="0.8" android:pathData="M38,38 A5,3 0 1,1 46,38 A5,3 0 1,1 38,38" />
+    <!-- 嘴 -->
+    <path android:strokeColor="#D81B60" android:strokeWidth="1.5" android:fillColor="#00000000" android:pathData="M28,42 Q32,46 36,42" />
+    <!-- 蝴蝶结 -->
+    <path android:fillColor="#FF1493" android:pathData="M44,22 L50,18 L48,26 Z" />
+    <path android:fillColor="#FF1493" android:pathData="M44,22 L38,18 L40,26 Z" />
+</vector>
