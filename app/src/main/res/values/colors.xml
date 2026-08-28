@@ -3,7 +3,13 @@
     <color name="primary">#E91E8C</color>
     <color name="primary_dark">#C2186A</color>
     <color name="accent">#FF69B4</color>
-    <color name="pink_bg">#FFF2F8</color>
-    <color name="pink_card">#FFFFFF</color>
-    <color name="pink_text">#5A2E4A</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="panel_bg">#F5FFFFFF</color>
+    <color name="divider">#FFEEEEEE</color>
+    <color name="text_hint">#888888</color>
+    <color name="ball_gradient_start">#FF69B4</color>
+    <color name="ball_gradient_end">#FF1493</color>
+    <color name="bg_start">#FFFFF0F5</color>
+    <color name="bg_center">#FFFFE4F0</color>
+    <color name="bg_end">#FFFFD1DC</color>
 </resources>
