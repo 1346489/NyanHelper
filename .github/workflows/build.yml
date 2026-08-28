@@ -1,0 +1,79 @@
+name: Build NyanHelper Debug APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # ===== 自动从 app_icon.png 生成全套图标 =====
+      - name: Check icon
+        id: check_icon
+        run: |
+          if [ -f "app_icon.png" ]; then
+            echo "HAS_ICON=true" >> $GITHUB_OUTPUT
+          else
+            echo "HAS_ICON=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install ImageMagick
+        if: steps.check_icon.outputs.HAS_ICON == 'true'
+        run: sudo apt-get update && sudo apt-get install -y imagemagick
+
+      - name: Generate icons
+        if: steps.check_icon.outputs.HAS_ICON == 'true'
+        run: |
+          mkdir -p app/src/main/res/drawable
+          convert app_icon.png -resize 512x512 -background white -gravity center -extent 512x512 app/src/main/res/drawable/nyan_app_icon.png
+          cp app/src/main/res/drawable/nyan_app_icon.png app/src/main/res/drawable/nyan_avatar.png
+          convert app_icon.png -resize 108x108 -background transparent -gravity center -extent 108x108 app/src/main/res/drawable/ic_launcher_foreground.png
+          for pair in "mdpi:48" "hdpi:72" "xhdpi:96" "xxhdpi:144" "xxxhdpi:192"; do
+            dir="${pair%%:*}"; size="${pair##*:}"
+            mkdir -p "app/src/main/res/mipmap-${dir}"
+            convert app_icon.png -resize "${size}x${size}" -background transparent -gravity center -extent "${size}x${size}" "app/src/main/res/mipmap-${dir}/ic_launcher.png"
+          done
+          echo "图标生成完成"
+
+      - name: Verify icons
+        if: steps.check_icon.outputs.HAS_ICON == 'true'
+        run: |
+          ls -la app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          ls -la app/src/main/res/drawable/nyan_avatar.png
+      # ==========================================
+
+      - name: Extract version
+        id: version
+        run: |
+          VERSION=$(grep "versionName" app/build.gradle | sed 's/.*"\(.*\)".*/\1/')
+          echo "VERSION_NAME=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Build debug APK
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Rename APK
+        run: |
+          mv app/build/outputs/apk/debug/app-debug.apk \
+             "app/build/outputs/apk/debug/NyanHelper-${{ steps.version.outputs.VERSION_NAME }}-debug.apk"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: NyanHelper-${{ steps.version.outputs.VERSION_NAME }}-debug-apk
+          path: app/build/outputs/apk/debug/NyanHelper-${{ steps.version.outputs.VERSION_NAME }}-debug.apk
