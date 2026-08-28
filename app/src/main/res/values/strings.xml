@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">本喵助手</string>
-    <string name="accessibility_desc">本喵助手无障碍辅助，用于全局文字替换</string>
+    <string name="status_idle">状态：待机中～</string>
+    <string name="btn_show_float">显示悬浮喵</string>
+    <string name="btn_open_access">打开无障碍权限</string>
+    <string name="btn_hide_float">隐藏悬浮窗</string>
 </resources>
