@@ -22,54 +22,67 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Generate icons from app_icon.png
+      - name: Generate icons from app_icon.png (clean first)
         run: |
           set -e
-          mkdir -p app/src/main/res/drawable
-          mkdir -p app/src/main/res/drawable-nodpi
 
-          # 清理可能重复的旧资源/旧名
-          rm -f app/src/main/res/drawable/bg_main.xml
-          rm -f app/src/main/res/drawable/nyan_avatar.xml
-          rm -f app/src/main/res/drawable/ic_launcher_foreground.xml
-          rm -f app/src/main/res/drawable/ic_launcher_background.xml
-          rm -f app/src/main/res/drawable/avatar.xml
-          rm -f app/src/main/res/drawable/avatar.png
-          rm -f app/src/main/res/drawable/ic_nyan_avatar.xml
-          rm -f app/src/main/res/drawable/ic_nyan_avatar.png
+          DRAWABLE="app/src/main/res/drawable"
+          NODPI="app/src/main/res/drawable-nodpi"
+          mkdir -p "$DRAWABLE" "$NODPI"
 
-          rm -f app/src/main/res/drawable-nodpi/ic_launcher_foreground.xml
-          rm -f app/src/main/res/drawable-nodpi/ic_launcher_background.xml
+          # 1) 彻底清理所有旧/冲突资源文件（xml 与 png 同名问题根源）
+          rm -f "$DRAWABLE"/bg_main.xml      "$DRAWABLE"/bg_main.png
+          rm -f "$DRAWABLE"/nyan_avatar.xml  "$DRAWABLE"/nyan_avatar.png
+          rm -f "$DRAWABLE"/ic_launcher_foreground.xml "$DRAWABLE"/ic_launcher_foreground.png
+          rm -f "$DRAWABLE"/ic_launcher_background.xml
+          rm -f "$DRAWABLE"/avatar.xml "$DRAWABLE"/avatar.png
+          rm -f "$DRAWABLE"/ic_nyan_avatar.xml "$DRAWABLE"/ic_nyan_avatar.png
+          rm -f "$NODPI"/ic_launcher_foreground.xml "$NODPI"/ic_launcher_foreground.png
 
-          rm -rf app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
-          rm -rf app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
-          rm -f app/src/main/res/mipmap-*/ic_launcher_foreground.png
-          rm -f app/src/main/res/mipmap-*/ic_launcher_round.png
-          rm -f app/src/main/res/mipmap-*/ic_launcher_background.png
+          rm -rf app/src/main/res/mipmap-anydpi-v26
+          for d in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
+            rm -f "app/src/main/res/mipmap-${d}/ic_launcher.png"
+            rm -f "app/src/main/res/mipmap-${d}/ic_launcher_round.png"
+            rm -f "app/src/main/res/mipmap-${d}/ic_launcher_foreground.png"
+            rm -f "app/src/main/res/mipmap-${d}/ic_launcher_background.png"
+          done
 
+          # 2) 用原图生成（不存在就用一个占位粉色圆形，保证构建不中断）
           if [ -f "app_icon.png" ]; then
             sudo apt-get update -qq
             sudo apt-get install -y -qq imagemagick
-
-            # 应用背景图：原图做窗口背景（png）
-            convert app_icon.png -resize 1024x1024 -background "#FFF6FA" -gravity center -extent 1024x1024 app/src/main/res/drawable/bg_main.png
-
-            # 头像/前景用原图
-            convert app_icon.png -resize 512x512 -background white -gravity center -extent 512x512 app/src/main/res/drawable/nyan_avatar.png
-            cp app/src/main/res/drawable/nyan_avatar.png app/src/main/res/drawable-nodpi/ic_launcher_foreground.png
-            cp app/src/main/res/drawable/nyan_avatar.png app/src/main/res/drawable/ic_launcher_foreground.png
-
-            for pair in "mdpi:48" "hdpi:72" "xhdpi:96" "xxhdpi:144" "xxxhdpi:192"; do
-              dir="${pair%%:*}"
-              size="${pair##*:}"
-              mkdir -p "app/src/main/res/mipmap-${dir}"
-              convert app_icon.png -resize "${size}x${size}" -background transparent -gravity center -extent "${size}x${size}" "app/src/main/res/mipmap-${dir}/ic_launcher.png"
-            done
+            SRC="app_icon.png"
             echo "使用 app_icon.png 生成图标"
           else
-            echo "未找到 app_icon.png，请上传仓库根目录"
-            exit 1
+            echo "未找到 app_icon.png，使用占位图标"
+            SRC="$DRAWABLE/_placeholder.png"
+            convert -size 512x512 xc:"#FF69B4" "$SRC"
           fi
+
+          # 窗口背景（png）
+          convert "$SRC" -resize 1024x1024 -background "#FFF6FA" -gravity center -extent 1024x1024 "$DRAWABLE/bg_main.png"
+
+          # 头像 + 自适应前景（png）
+          convert "$SRC" -resize 512x512 -background white -gravity center -extent 512x512 "$DRAWABLE/nyan_avatar.png"
+          cp "$DRAWABLE/nyan_avatar.png" "$NODPI/ic_launcher_foreground.png"
+
+          # 各密度启动器图标（png）
+          for pair in "mdpi:48" "hdpi:72" "xhdpi:96" "xxhdpi:144" "xxxhdpi:192"; do
+            dir="${pair%%:*}"; size="${pair##*:}"
+            mkdir -p "app/src/main/res/mipmap-${dir}"
+            convert "$SRC" -resize "${size}x${size}" -background transparent -gravity center -extent "${size}x${size}" \
+              "app/src/main/res/mipmap-${dir}/ic_launcher.png"
+          done
+
+          # 3) 校验：绝不能同时存在同名 .xml 与 .png
+          echo "--- drawable 资源清单 ---"
+          ls -la "$DRAWABLE"
+          for name in bg_main nyan_avatar ic_launcher_foreground; do
+            if [ -f "$DRAWABLE/$name.xml" ] && [ -f "$DRAWABLE/$name.png" ]; then
+              echo "ERROR: $name 同时存在 xml 与 png"; exit 1
+            fi
+          done
+          echo "资源检查通过，无重复"
 
       - name: Build debug APK
         uses: gradle/gradle-build-action@v3
@@ -83,12 +96,11 @@ jobs:
         run: |
           VERSION=$(grep "versionName" app/build.gradle | sed 's/.*"\(.*\)".*/\1/')
           echo "VERSION_NAME=$VERSION" >> $GITHUB_OUTPUT
-          echo "Version: $VERSION"
 
       - name: Rename APK
         run: |
-          mv app/build/outputs/apk/debug/app-debug.apk \
-             app/build/outputs/apk/debug/NyanHelper-${{ steps.version.outputs.VERSION_NAME }}-debug.apk
+          mv "app/build/outputs/apk/debug/app-debug.apk" \
+             "app/build/outputs/apk/debug/NyanHelper-${{ steps.version.outputs.VERSION_NAME }}-debug.apk"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
