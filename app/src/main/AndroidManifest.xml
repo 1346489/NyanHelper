@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- 悬浮窗权限 -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- 前台服务 -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <application
         android:allowBackup="true"
@@ -25,15 +27,15 @@
         <activity android:name=".SettingsActivity" android:exported="false" />
         <activity android:name=".ThemeActivity" android:exported="false" />
 
+        <!-- 悬浮窗服务（类名 FloatWindowService，与代码一致）-->
         <service
-            android:name=".FloatService"
-            android:enabled="true"
+            android:name=".FloatWindowService"
             android:exported="false"
-            android:foregroundServiceType="specialUse" />
+            android:foregroundServiceType="dataSync" />
 
+        <!-- 无障碍服务 -->
         <service
             android:name=".NyanAccessibilityService"
-            android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
