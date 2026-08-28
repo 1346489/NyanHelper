@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.NyanHelper" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
-        <item name="android:windowBackground">@drawable/bg_main</item>
-    </style>
+    <string name="app_name">本喵助手</string>
+    <string name="accessibility_desc">本喵助手无障碍服务，用于聊天文本替换与悬浮面板控制。</string>
 </resources>
