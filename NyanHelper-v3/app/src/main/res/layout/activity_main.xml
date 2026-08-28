@@ -1,1 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:padding="24dp">
 
+    <!-- 顶部头像（第5张图） -->
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:layout_marginTop="32dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/avatar_main"
+        android:background="@drawable/bg_avatar_circle"
+        android:padding="5dp"
+        android:contentDescription="@string/app_name" />
+
+    <!-- 标题 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:textColor="#FF5C8D"
+        android:layout_marginTop="14dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="让文字变得可爱喵~"
+        android:textSize="14sp"
+        android:textColor="#C98BA8"
+        android:layout_marginBottom="28dp" />
+
+    <!-- 状态卡片 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_card_white"
+        android:padding="18dp"
+        android:elevation="4dp">
+
+        <TextView
+            android:id="@+id/tvFloatStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="❌ 悬浮窗权限未开启"
+            android:textSize="14sp"
+            android:paddingVertical="7dp" />
+
+        <View android:layout_width="match_parent" android:layout_height="1dp"
+            android:background="#F0D4E4" />
+
+        <TextView
+            android:id="@+id/tvAccessStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="❌ 无障碍服务未开启"
+            android:textSize="14sp"
+            android:paddingVertical="7dp" />
+
+        <View android:layout_width="match_parent" android:layout_height="1dp"
+            android:background="#F0D4E4" />
+
+        <TextView
+            android:id="@+id/tvServiceStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="⚪ 悬浮窗服务未运行"
+            android:textSize="14sp"
+            android:paddingVertical="7dp" />
+    </LinearLayout>
+
+    <!-- 按钮 -->
+    <Button
+        android:id="@+id/btnFloatToggle"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:text="开启悬浮窗"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#FF8FBC"
+        android:layout_marginTop="24dp" />
+
+    <Button
+        android:id="@+id/btnAccessOpen"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:text="去开启无障碍服务"
+        android:textSize="16sp"
+        android:textColor="#FF5C8D"
+        android:backgroundTint="#FFF0F6"
+        android:layout_marginTop="12dp" />
+
+    <Button
+        android:id="@+id/btnRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:text="刷新状态"
+        android:textSize="16sp"
+        android:textColor="#888"
+        android:backgroundTint="#F5F5F5"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="32dp" />
+
+</LinearLayout>
