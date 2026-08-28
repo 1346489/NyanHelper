@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <!-- 展开面板（三页） -->
+    <LinearLayout
+        android:id="@+id/float_panel"
+        android:layout_width="260dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_panel"
+        android:elevation="12dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="12dp">
+
+        <!-- 顶部 Tab：功能 / 设置 / 主题 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:orientation="horizontal"
+            android:background="@drawable/bg_tab_bar">
+
+            <TextView
+                android:id="@+id/tab_functions"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="功能"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#FFE91E8C" />
+
+            <TextView
+                android:id="@+id/tab_settings"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="设置"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#888888" />
+
+            <TextView
+                android:id="@+id/tab_theme"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="主题"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#888888" />
+        </LinearLayout>
+
+        <!-- ========== 页1：功能 ========== -->
+        <LinearLayout
+            android:id="@+id/page_functions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="文字替换功能（需开启无障碍服务）"
+                android:textSize="11sp"
+                android:textColor="#888"
+                android:layout_marginBottom="10dp" />
+
+            <Switch
+                android:id="@+id/sw_add_nya"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="结尾加“喵”"
+                android:textSize="14sp" />
+
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="#EEE" android:layout_marginVertical="4dp" />
+
+            <Switch
+                android:id="@+id/sw_me"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="“我” → “本喵”"
+                android:textSize="14sp" />
+
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="#EEE" android:layout_marginVertical="4dp" />
+
+            <Switch
+                android:id="@+id/sw_you"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="“你” → “主人”"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="支持所有聊天软件喵~"
+                android:textSize="11sp"
+                android:textColor="#FF8FBC"
+                android:gravity="center"
+                android:layout_marginTop="10dp" />
+        </LinearLayout>
+
+        <!-- ========== 页2：设置 ========== -->
+        <LinearLayout
+            android:id="@+id/page_settings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="悬浮球特效（只能开一个）"
+                android:textSize="11sp"
+                android:textColor="#888"
+                android:layout_marginBottom="10dp" />
+
+            <Switch
+                android:id="@+id/sw_snow"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="❄️ 雪花特效"
+                android:textSize="14sp" />
+
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="#EEE" android:layout_marginVertical="4dp" />
+
+            <Switch
+                android:id="@+id/sw_meteor"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="☄️ 流星特效"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="开一个自动关另一个喵~"
+                android:textSize="11sp"
+                android:textColor="#FF8FBC"
+                android:gravity="center"
+                android:layout_marginTop="10dp" />
+        </LinearLayout>
+
+        <!-- ========== 页3：主题 ========== -->
+        <LinearLayout
+            android:id="@+id/page_theme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="选择背景主题"
+                android:textSize="11sp"
+                android:textColor="#888"
+                android:layout_marginBottom="12dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!-- 主题0：樱花粉 -->
+                <FrameLayout
+                    android:id="@+id/theme_0"
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_theme_pink">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="樱花粉"
+                        android:textColor="#C2186A"
+                        android:textStyle="bold"
+                        android:layout_gravity="center" />
+                </FrameLayout>
+
+                <!-- 主题1：薄荷绿 -->
+                <FrameLayout
+                    android:id="@+id/theme_1"
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_theme_mint">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="薄荷绿"
+                        android:textColor="#2E7D32"
+                        android:textStyle="bold"
+                        android:layout_gravity="center" />
+                </FrameLayout>
+
+                <!-- 主题2：星空紫 -->
+                <FrameLayout
+                    android:id="@+id/theme_2"
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_theme_purple">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="星空紫"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold"
+                        android:layout_gravity="center" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="主界面与悬浮球颜色同步变化"
+                android:textSize="11sp"
+                android:textColor="#FF8FBC"
+                android:gravity="center"
+                android:layout_marginTop="12dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 圆形悬浮球 + 动态特效层（完美覆盖圆形） -->
+    <FrameLayout
+        android:layout_width="64dp"
+        android:layout_height="64dp">
+
+        <FrameLayout
+            android:id="@+id/float_ball"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:background="@drawable/bg_ball_circle">
+
+            <ImageView
+                android:id="@+id/float_ball_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/icon_ball" />
+        </FrameLayout>
+
+        <!-- 特效层：裁剪到圆形区域，雪花/流星在此绘制 -->
+        <com.moe.nyanhelper.ViewEffectOverlay
+            android:id="@+id/effect_overlay"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:background="@android:color/transparent" />
+    </FrameLayout>
+
+</FrameLayout>
