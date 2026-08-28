@@ -1,40 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="@drawable/bg_main">
+    android:background="@drawable/bg_theme_sakura">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="设置"
-        android:textSize="22sp"
+        android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="#FF5C8D"
-        android:layout_marginBottom="16dp" />
+        android:textColor="#5B2740"
+        android:gravity="center"
+        android:layout_marginBottom="24dp" />
 
-    <Switch
-        android:id="@+id/swSnow"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="雪花特效（悬浮球左上角飘落）"
-        android:textSize="14sp" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="12dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/panel_item_bg">
 
-    <Switch
-        android:id="@+id/swMeteor"
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="❄️ 雪花特效（左上）"
+            android:textSize="16sp"
+            android:textColor="#5B2740" />
+
+        <Switch
+            android:id="@+id/swSnow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="流星特效（右上角坠落）"
-        android:textSize="14sp" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="12dp"
+        android:background="@drawable/panel_item_bg">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="☄️ 流星特效（右上）"
+            android:textSize="16sp"
+            android:textColor="#5B2740" />
+
+        <Switch
+            android:id="@+id/swMeteor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="两个特效互斥：开启一个会自动关闭另一个"
+        android:layout_marginTop="16dp"
+        android:text="雪花和流星互斥，同时只能开一个"
         android:textSize="12sp"
-        android:textColor="#888"
-        android:layout_marginTop="12dp" />
+        android:textColor="#999999"
+        android:gravity="center" />
 
 </LinearLayout>
