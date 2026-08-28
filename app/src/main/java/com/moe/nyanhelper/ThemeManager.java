@@ -1,47 +1,67 @@
 package com.moe.nyanhelper;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.view.View;
+import android.widget.ImageView;
 
 public class ThemeManager {
-    public static final int THEME_SAKURA = 0; // 樱花粉
-    public static final int THEME_MINT   = 1; // 薄荷绿
-    public static final int THEME_STARRY = 2; // 星空紫
 
-    private static final String PREF = "nyan_theme";
-    private static final String KEY  = "theme_index";
+    public static final int THEME_SAKURA = 0;
+    public static final int THEME_MINT = 1;
+    public static final int THEME_STARRY = 2;
 
-    public static void setTheme(Context c, int theme) {
-        prefs(c).edit().putInt(KEY, theme).apply();
+    /**
+     * 给 Activity 根布局设置主题背景。
+     * rootView 建议传 MainActivity 的 setContentView 根布局，例如：
+     * View rootView = findViewById(android.R.id.content);
+     * 或你布局里指定的根 LinearLayout/ConstraintLayout/FrameLayout。
+     */
+    public static void applyTheme(Context context, View rootView) {
+        if (context == null || rootView == null) return;
+
+        int theme = NyanConfig.getTheme(context);
+
+        switch (theme) {
+            case THEME_MINT:
+                rootView.setBackgroundResource(R.drawable.bg_theme_mint);
+                break;
+
+            case THEME_STARRY:
+                rootView.setBackgroundResource(R.drawable.bg_theme_starry);
+                break;
+
+            case THEME_SAKURA:
+            default:
+                rootView.setBackgroundResource(R.drawable.bg_theme_sakura);
+                break;
+        }
+
+        // 如果以后有状态栏/文字颜色适配，可以放这里。
+        // 星空主题建议文字浅色，樱花粉/薄荷绿建议深色文字。
     }
 
-    public static int getTheme(Context c) {
-        return prefs(c).getInt(KEY, THEME_SAKURA);
-    }
+    /**
+     * 如果浮窗/面板里需要取背景 drawable id，保留这个。
+     */
+    public static int getThemeBackgroundRes(Context context) {
+        int theme = NyanConfig.getTheme(context);
 
-    // 主背景渐变（用于 Activity 根布局）
-    public static int getMainBackground(Context c) {
-        switch (getTheme(c)) {
-            case THEME_MINT:   return R.drawable.bg_theme_mint;
-            case THEME_STARRY: return R.drawable.bg_theme_starry;
-            default:           return R.drawable.bg_theme_sakura;
+        switch (theme) {
+            case THEME_MINT:
+                return R.drawable.bg_theme_mint;
+            case THEME_STARRY:
+                return R.drawable.bg_theme_starry;
+            case THEME_SAKURA:
+            default:
+                return R.drawable.bg_theme_sakura;
         }
     }
 
-    // 卡片/面板背景色（ARGB int，用于动态着色）
-    public static int getCardColor(Context c) {
-        switch (getTheme(c)) {
-            case THEME_MINT:   return 0xFFE8F8F0; // 薄荷白
-            case THEME_STARRY: return 0xFF2B2440; // 深紫
-            default:           return 0xFFFFFFFF; // 樱花粉-白
-        }
-    }
-
-    public static int getTextColor(Context c) {
-        return getTheme(c) == THEME_STARRY ? 0xFFEDE7F6 : 0xFF5A2E4A;
-    }
-
-    private static SharedPreferences prefs(Context c) {
-        return c.getSharedPreferences(PREF, Context.MODE_PRIVATE);
+    /**
+     * 示例：如果某个 ImageView 要显示主题背景缩略图/全屏背景，用这个。
+     */
+    public static void setImageViewBackground(Context context, ImageView imageView) {
+        if (context == null || imageView == null) return;
+        imageView.setImageResource(getThemeBackgroundRes(context));
     }
 }
