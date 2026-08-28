@@ -2,7 +2,6 @@ package com.moe.nyanhelper;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
@@ -15,99 +14,71 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView tvFloatStatus, tvAccessStatus, tvServiceStatus;
-    private Button btnFloatToggle, btnAccessOpen, btnRefresh;
+    private TextView tvFloat, tvAccess, tvService;
+    private Button btnToggle, btnAccess, btnRefresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initViews();
-        updateStatus();
-
-        btnFloatToggle.setOnClickListener(v -> toggleFloatWindow());
-        btnAccessOpen.setOnClickListener(v -> openAccessibilitySettings());
-        btnRefresh.setOnClickListener(v -> updateStatus());
-    }
-
-    private void initViews() {
         ImageView avatar = findViewById(R.id.avatar);
-        tvFloatStatus = findViewById(R.id.tvFloatStatus);
-        tvAccessStatus = findViewById(R.id.tvAccessStatus);
-        tvServiceStatus = findViewById(R.id.tvServiceStatus);
-        btnFloatToggle = findViewById(R.id.btnFloatToggle);
-        btnAccessOpen = findViewById(R.id.btnAccessOpen);
-        btnRefresh = findViewById(R.id.btnServiceToggle);
+        tvFloat = findViewById(R.id.tvFloatStatus);
+        tvAccess = findViewById(R.id.tvAccessStatus);
+        tvService = findViewById(R.id.tvServiceStatus);
+        btnToggle = findViewById(R.id.btnFloatToggle);
+        btnAccess = findViewById(R.id.btnAccessOpen);
+        btnRefresh = findViewById(R.id.btnRefresh);
 
-        avatar.setImageResource(R.drawable.avatar);
+        avatar.setImageResource(R.drawable.nyan_avatar);
+
+        btnToggle.setOnClickListener(v -> toggle());
+        btnAccess.setOnClickListener(v -> startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)));
+        btnRefresh.setOnClickListener(v -> update());
+        update();
     }
 
-    private void updateStatus() {
+    private void update() {
         boolean hasFloat = Settings.canDrawOverlays(this);
-        tvFloatStatus.setText(hasFloat ? "✅ 悬浮窗权限已开启" : "❌ 悬浮窗权限未开启");
+        tvFloat.setText(hasFloat ? "✅ 悬浮窗权限已开启" : "❌ 悬浮窗权限未开启");
 
-        boolean hasAccess = isAccessibilityEnabled();
-        tvAccessStatus.setText(hasAccess ? "✅ 无障碍服务已开启" : "❌ 无障碍服务未开启");
+        boolean hasAccess = false;
+        for (android.accessibilityservice.AccessibilityServiceInfo info :
+                ((android.view.accessibility.AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE))
+                        .getEnabledAccessibilityServiceList(android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_ALL_MASK)) {
+            if (info.getId() != null && info.getId().contains("nyanhelper")) hasAccess = true;
+        }
+        tvAccess.setText(hasAccess ? "✅ 无障碍服务已开启" : "❌ 无障碍服务未开启");
 
-        boolean floatStarted = getSharedPreferences("nyan_config", MODE_PRIVATE)
-                .getBoolean("float_started", false);
-        tvServiceStatus.setText(floatStarted && hasFloat
-                ? "🟢 悬浮窗服务运行中" : "⚪ 悬浮窗服务未运行");
-        btnFloatToggle.setText(floatStarted && hasFloat ? "关闭悬浮窗" : "开启悬浮窗");
+        boolean running = getSharedPreferences("nyan_config", MODE_PRIVATE).getBoolean("float_started", false);
+        tvService.setText(running && hasFloat ? "🟢 悬浮窗服务运行中" : "⚪ 悬浮窗服务未运行");
+        btnToggle.setText(running && hasFloat ? "关闭悬浮窗" : "开启悬浮窗");
     }
 
-    private void toggleFloatWindow() {
+    private void toggle() {
         if (!Settings.canDrawOverlays(this)) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-            startActivity(intent);
+            startActivity(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName())));
             Toast.makeText(this, "请先授予悬浮窗权限喵~", Toast.LENGTH_LONG).show();
             return;
         }
-
         Intent intent = new Intent(this, FloatWindowService.class);
-        boolean currentlyRunning = getSharedPreferences("nyan_config", MODE_PRIVATE)
-                .getBoolean("float_started", false);
-
-        if (currentlyRunning) {
+        boolean running = getSharedPreferences("nyan_config", MODE_PRIVATE).getBoolean("float_started", false);
+        if (running) {
             stopService(intent);
-            getSharedPreferences("nyan_config", MODE_PRIVATE).edit()
-                    .putBoolean("float_started", false).apply();
+            getSharedPreferences("nyan_config", MODE_PRIVATE).edit().putBoolean("float_started", false).apply();
             Toast.makeText(this, "悬浮窗已关闭喵~", Toast.LENGTH_SHORT).show();
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(intent);
-            } else {
-                startService(intent);
-            }
-            getSharedPreferences("nyan_config", MODE_PRIVATE).edit()
-                    .putBoolean("float_started", true).apply();
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) startForegroundService(intent);
+            else startService(intent);
+            getSharedPreferences("nyan_config", MODE_PRIVATE).edit().putBoolean("float_started", true).apply();
             Toast.makeText(this, "悬浮窗已开启喵~", Toast.LENGTH_SHORT).show();
         }
-        updateStatus();
-    }
-
-    private void openAccessibilitySettings() {
-        startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-    }
-
-    private boolean isAccessibilityEnabled() {
-        for (android.accessibilityservice.AccessibilityServiceInfo info :
-                ((android.view.accessibility.AccessibilityManager)
-                        getSystemService(ACCESSIBILITY_SERVICE))
-                        .getEnabledAccessibilityServiceList(
-                                android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_ALL_MASK)) {
-            if (info.getId() != null && info.getId().contains("nyanhelper")) {
-                return true;
-            }
-        }
-        return false;
+        update();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        updateStatus();
+        update();
     }
 }
