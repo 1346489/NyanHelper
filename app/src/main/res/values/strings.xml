@@ -1,7 +1,0 @@
-<resources>
-    <string name="app_name">本喵助手</string>
-    <string name="status_idle">状态：待机中～</string>
-    <string name="btn_show_float">显示悬浮喵</string>
-    <string name="btn_open_access">打开无障碍权限</string>
-    <string name="btn_hide_float">隐藏悬浮窗</string>
-</resources>
