@@ -1,28 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="220dp"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:background="@drawable/panel_bg"
     android:orientation="vertical"
-    android:background="@drawable/bg_card_white"
-    android:padding="12dp"
-    android:elevation="6dp">
+    android:padding="10dp">
 
     <ImageView
         android:id="@+id/panelAvatar"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_gravity="center"
         android:src="@drawable/avatar_main"
-        android:scaleType="fitCenter"
-        android:contentDescription="@string/app_name"
-        android:layout_gravity="center_horizontal" />
+        android:contentDescription="avatar" />
+
+    <Button
+        android:id="@+id/btnSettings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="设置"
+        android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/btnFeatures"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="功能"
+        android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/btnTheme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="主题"
+        android:textSize="12sp" />
 
     <Button
         android:id="@+id/panelClose"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/btn_hide_float"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="#FF8FBC"
-        android:textColor="#FFFFFF" />
+        android:backgroundTint="#FF9CCC"
+        android:text="隐藏悬浮"
+        android:textSize="12sp" />
 
 </LinearLayout>
