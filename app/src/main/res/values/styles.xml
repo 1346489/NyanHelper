@@ -1,12 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">#FF9ECD</item>
-        <item name="colorPrimaryDark">#FF6FB6</item>
-        <item name="colorAccent">#FF5FA2</item>
-        <item name="android:windowBackground">#FFF2F8</item>
-        <item name="android:textColor">#5B2740</item>
-    </style>
-
+    <!-- 留空也可以，或者放其他非重复 style -->
 </resources>
