@@ -18,6 +18,9 @@ android {
         debug {
             minifyEnabled false
         }
+        release {
+            minifyEnabled false
+        }
     }
 
     compileOptions {
