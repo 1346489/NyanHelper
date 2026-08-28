@@ -16,13 +16,12 @@ public class SnowMeteorView extends View {
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Random rand = new Random();
 
+    private boolean running;
     private boolean snowOn;
     private boolean meteorOn;
 
     private final List<Snow> snow = new ArrayList<>();
     private final List<Meteor> meteors = new ArrayList<>();
-
-    private boolean running;
 
     public SnowMeteorView(Context context) {
         super(context);
@@ -43,9 +42,9 @@ public class SnowMeteorView extends View {
         paint.setColor(Color.WHITE);
     }
 
-    public void refreshConfig(boolean snow, boolean meteor) {
-        this.snowOn = snow;
-        this.meteorOn = meteor;
+    public void refreshConfig(boolean snowEnabled, boolean meteorEnabled) {
+        this.snowOn = snowEnabled;
+        this.meteorOn = meteorEnabled;
 
         if (!snowOn) {
             snow.clear();
@@ -55,8 +54,7 @@ public class SnowMeteorView extends View {
         }
 
         if (snowOn || meteorOn) {
-            running = true;
-            invalidate();
+            startEffect();
         } else {
             stopEffect();
         }
@@ -66,6 +64,13 @@ public class SnowMeteorView extends View {
         running = false;
         snow.clear();
         meteors.clear();
+        invalidate();
+    }
+
+    private void startEffect() {
+        if (!running) {
+            running = true;
+        }
         invalidate();
     }
 
@@ -129,16 +134,19 @@ public class SnowMeteorView extends View {
 
     static class Snow {
         float x, y, speed, r;
+
         Snow(float x, float y) {
             this.x = x;
             this.y = y;
-            this.speed = 1f + new Random().nextFloat() * 2f;
-            this.r = 1.5f + new Random().nextFloat() * 2.5f;
+            Random r = new Random();
+            this.speed = 1f + r.nextFloat() * 2f;
+            this.r = 1.5f + r.nextFloat() * 2.5f;
         }
     }
 
     static class Meteor {
         float x, y, speed;
+
         Meteor(float x, float y) {
             this.x = x;
             this.y = y;
