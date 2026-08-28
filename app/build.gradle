@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'com.moe.nyanhelper'
+    namespace "com.moe.nyanhelper"
     compileSdk 34
 
     defaultConfig {
@@ -16,9 +16,6 @@ android {
 
     buildTypes {
         debug {
-            minifyEnabled false
-        }
-        release {
             minifyEnabled false
         }
     }
