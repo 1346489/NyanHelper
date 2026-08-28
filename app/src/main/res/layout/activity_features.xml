@@ -14,19 +14,19 @@
         android:layout_marginBottom="12dp"/>
 
     <Switch
-        android:id="@+id/switchAddNya"
+        android:id="@+id/swAddNya"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/switch_add_nya"/>
 
     <Switch
-        android:id="@+id/switchYouMaster"
+        android:id="@+id/swYouToMaster"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/switch_you_master"/>
 
     <Switch
-        android:id="@+id/switchMeNyan"
+        android:id="@+id/swIToMe"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/switch_me_nyan"/>
