@@ -5,79 +5,96 @@ import android.content.SharedPreferences;
 
 public class NyanConfig {
 
-    private static final String PREF = "nyan_config";
+    private static final String PREFS = "nyan_config";
+    private static final String KEY_SERVICE_RUNNING = "service_running";
+    private static final String KEY_ADD_NYA = "add_nya";
+    private static final String KEY_YOU_TO_MASTER = "you_to_master";
+    private static final String KEY_I_TO_ME = "i_to_me";
+    private static final String KEY_SNOW = "snow";
+    private static final String KEY_METEOR = "meteor";
+    private static final String KEY_THEME = "theme";
 
-    // 功能页开关
-    public static boolean isAddNya(Context c) { return pref(c).getBoolean("add_nya", true); }
-    public static void setAddNya(Context c, boolean v) { pref(c).edit().putBoolean("add_nya", v).apply(); }
+    // ===== 服务运行状态 =====
+    public static void setServiceRunning(Context context, boolean running) {
+        getSp(context).edit().putBoolean(KEY_SERVICE_RUNNING, running).apply();
+    }
 
-    public static boolean isReplaceYou(Context c) { return pref(c).getBoolean("replace_you", true); }
-    public static void setReplaceYou(Context c, boolean v) { pref(c).edit().putBoolean("replace_you", v).apply(); }
+    public static boolean isServiceRunning(Context context) {
+        return getSp(context).getBoolean(KEY_SERVICE_RUNNING, false);
+    }
 
-    public static boolean isReplaceMe(Context c) { return pref(c).getBoolean("replace_me", true); }
-    public static void setReplaceMe(Context c, boolean v) { pref(c).edit().putBoolean("replace_me", v).apply(); }
+    // ===== 功能开关 =====
+    public static void setAddNya(Context context, boolean on) {
+        getSp(context).edit().putBoolean(KEY_ADD_NYA, on).apply();
+    }
 
-    // 设置页开关（互斥：只能开一个）
-    public static boolean isSnow(Context c) { return pref(c).getBoolean("snow", false); }
-    public static boolean isMeteor(Context c) { return pref(c).getBoolean("meteor", false); }
+    public static boolean isAddNya(Context context) {
+        return getSp(context).getBoolean(KEY_ADD_NYA, true);
+    }
 
-    public static void setSnow(Context c, boolean on) {
-        SharedPreferences.Editor e = pref(c).edit();
-        e.putBoolean("snow", on);
-        if (on) e.putBoolean("meteor", false);
+    public static void setYouToMaster(Context context, boolean on) {
+        getSp(context).edit().putBoolean(KEY_YOU_TO_MASTER, on).apply();
+    }
+
+    public static boolean isYouToMaster(Context context) {
+        return getSp(context).getBoolean(KEY_YOU_TO_MASTER, true);
+    }
+
+    public static void setIToMe(Context context, boolean on) {
+        getSp(context).edit().putBoolean(KEY_I_TO_ME, on).apply();
+    }
+
+    public static boolean isIToMe(Context context) {
+        return getSp(context).getBoolean(KEY_I_TO_ME, true);
+    }
+
+    // ===== 特效开关（互斥）=====
+    public static void setSnow(Context context, boolean on) {
+        SharedPreferences.Editor e = getSp(context).edit();
+        e.putBoolean(KEY_SNOW, on);
+        if (on) e.putBoolean(KEY_METEOR, false);
         e.apply();
     }
 
-    public static void setMeteor(Context c, boolean on) {
-        SharedPreferences.Editor e = pref(c).edit();
-        e.putBoolean("meteor", on);
-        if (on) e.putBoolean("snow", false);
+    public static boolean isSnow(Context context) {
+        return getSp(context).getBoolean(KEY_SNOW, false);
+    }
+
+    public static void setMeteor(Context context, boolean on) {
+        SharedPreferences.Editor e = getSp(context).edit();
+        e.putBoolean(KEY_METEOR, on);
+        if (on) e.putBoolean(KEY_SNOW, false);
         e.apply();
     }
 
-    // 主题：0=樱花粉 1=薄荷绿 2=星空紫
-    public static int getTheme(Context c) { return pref(c).getInt("theme", 0); }
-    public static void setTheme(Context c, int t) { pref(c).edit().putInt("theme", t).apply(); }
-
-    public static int getThemeColor(Context c) {
-        switch (getTheme(c)) {
-            case 1: return 0xFFE8F5E9; // 薄荷绿
-            case 2: return 0xFF2A2348; // 星空紫
-            default: return 0xFFFFF0F6; // 樱花粉
-        }
+    public static boolean isMeteor(Context context) {
+        return getSp(context).getBoolean(KEY_METEOR, false);
     }
 
-    /**
-     * 核心替换逻辑（不依赖具体 App，对任意聊天/输入类 EditText 生效）：
-     *   你 → 主人
-     *   我 → 本喵
-     *   结尾加「喵」（在句末标点前）
-     */
-    public static String apply(String text) {
-        if (text == null || text.isEmpty()) return text;
-        String s = text;
-        if (isReplaceYou(nullSafe())) s = s.replace("你", "主人");
-        if (isReplaceMe(nullSafe())) s = s.replace("我", "本喵");
-        if (isAddNya(nullSafe())) s = appendNya(s);
-        return s;
+    // ===== 主题 =====
+    public static final int THEME_SAKURA = 0;
+    public static final int THEME_MINT = 1;
+    public static final int THEME_STARRY = 2;
+
+    public static void setTheme(Context context, int theme) {
+        getSp(context).edit().putInt(KEY_THEME, theme).apply();
     }
 
-    private static String appendNya(String s) {
-        s = s.trim();
-        if (s.isEmpty()) return s;
-        if (s.endsWith("喵") || s.endsWith("喵~") || s.endsWith("喵！")) return s;
-        char last = s.charAt(s.length() - 1);
-        if ("。！？….!?~".indexOf(last) >= 0) {
-            return s.substring(0, s.length() - 1) + "喵" + last;
-        }
-        return s + "喵~";
+    public static int getTheme(Context context) {
+        return getSp(context).getInt(KEY_THEME, THEME_SAKURA);
     }
 
-    private static Context nullSafe() {
-        return AppContext.get();
+    // ===== 文字替换核心 =====
+    public static String apply(Context context, String text) {
+        if (text == null) return null;
+        String result = text;
+        if (isYouToMaster(context)) result = result.replace("你", "主人");
+        if (isIToMe(context)) result = result.replace("我", "本喵");
+        if (isAddNya(context)) result = result + "喵~";
+        return result;
     }
 
-    private static SharedPreferences pref(Context c) {
-        return c.getSharedPreferences(PREF, Context.MODE_PRIVATE);
+    private static SharedPreferences getSp(Context context) {
+        return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     }
 }
