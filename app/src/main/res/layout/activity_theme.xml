@@ -1,63 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="@drawable/bg_main">
+    android:background="@drawable/bg_theme_sakura">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="主题"
-        android:textSize="22sp"
+        android:text="主题选择"
+        android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="#FF5C8D"
-        android:layout_marginBottom="16dp" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:orientation="horizontal">
-
-        <View
-            android:id="@+id/themePink"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#FFFFF0F6"
-            android:layout_margin="6dp" />
-
-        <View
-            android:id="@+id/themeGreen"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#FFE8F5E9"
-            android:layout_margin="6dp" />
-
-        <View
-            android:id="@+id/themePurple"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#FF2A2348"
-            android:layout_margin="6dp" />
-    </LinearLayout>
+        android:textColor="#5B2740"
+        android:gravity="center"
+        android:layout_marginBottom="24dp" />
 
     <TextView
+        android:id="@+id/btnSakura"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="① 樱花粉　② 薄荷绿　③ 星空紫"
-        android:textSize="13sp"
-        android:textColor="#666"
-        android:layout_marginTop="8dp" />
+        android:layout_height="80dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:text="🌸 樱花粉"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#5B2740"
+        android:background="@drawable/bg_theme_sakura" />
 
-    <View
-        android:id="@+id/previewBg"
+    <TextView
+        android:id="@+id/btnMint"
         android:layout_width="match_parent"
-        android:layout_height="160dp"
-        android:background="#FFFFF0F6"
-        android:layout_marginTop="16dp" />
+        android:layout_height="80dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:text="🌿 薄荷绿"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#2E7D32"
+        android:background="@drawable/bg_theme_mint" />
+
+    <TextView
+        android:id="@+id/btnStarry"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:gravity="center"
+        android:text="🌌 星空紫"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/bg_theme_starry" />
 
 </LinearLayout>
