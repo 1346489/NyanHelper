@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace "com.moe.nyanhelper"
+    namespace 'com.moe.nyanhelper'
     compileSdk 34
 
     defaultConfig {
