@@ -10,79 +10,43 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="功能设置"
-        android:textSize="24sp"
+        android:text="功能"
+        android:textSize="22sp"
         android:textStyle="bold"
         android:textColor="#5B2740"
         android:gravity="center"
         android:layout_marginBottom="24dp" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="12dp"
-        android:layout_marginBottom="12dp"
-        android:background="@drawable/panel_item_bg">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="句尾加喵"
-            android:textSize="16sp"
-            android:textColor="#5B2740" />
-
-        <Switch
-            android:id="@+id/swAddNya"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:background="@drawable/panel_item_bg"
+        android:padding="12dp" android:layout_marginBottom="12dp">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="句尾加「喵~」" android:textSize="16sp" android:textColor="#5B2740" />
+        <Switch android:id="@+id/swAddNya" android:layout_width="wrap_content" android:layout_height="wrap_content" />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="12dp"
-        android:layout_marginBottom="12dp"
-        android:background="@drawable/panel_item_bg">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="你→主人"
-            android:textSize="16sp"
-            android:textColor="#5B2740" />
-
-        <Switch
-            android:id="@+id/swYouToMaster"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:background="@drawable/panel_item_bg"
+        android:padding="12dp" android:layout_marginBottom="12dp">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="「你」→「主人」" android:textSize="16sp" android:textColor="#5B2740" />
+        <Switch android:id="@+id/swYouToMaster" android:layout_width="wrap_content" android:layout_height="wrap_content" />
     </LinearLayout>
 
-    <LinearLayout
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:background="@drawable/panel_item_bg"
+        android:padding="12dp">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="「我」→「本喵」" android:textSize="16sp" android:textColor="#5B2740" />
+        <Switch android:id="@+id/swIToMe" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="12dp"
-        android:background="@drawable/panel_item_bg">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="我→本喵"
-            android:textSize="16sp"
-            android:textColor="#5B2740" />
-
-        <Switch
-            android:id="@+id/swIToMe"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+        android:layout_marginTop="16dp"
+        android:text="（需开启无障碍服务，对任意输入框生效喵~）"
+        android:textSize="12sp"
+        android:textColor="#999999" />
 
 </LinearLayout>

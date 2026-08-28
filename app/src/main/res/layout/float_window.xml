@@ -1,36 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/root"
-    android:layout_width="wrap_content"
+    android:layout_width="150dp"
     android:layout_height="wrap_content">
 
-    <!-- 悬浮球 -->
-    <ImageButton
-        android:id="@+id/float_ball"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:background="@drawable/ball_circle"
-        android:src="@drawable/icon_ball"
-        android:scaleType="centerCrop"
-        android:contentDescription="本喵悬浮球" />
+    <!-- 特效绘制层（放在最底层，覆盖整个悬浮窗区域） -->
+    <FrameLayout
+        android:id="@+id/effectLayer"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:background="@android:color/transparent" />
 
-    <!-- 面板（默认隐藏，点击球后显示） -->
+    <!-- 悬浮球/面板（半透明粉色） -->
     <LinearLayout
-        android:id="@+id/float_panel"
-        android:layout_width="260dp"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="70dp"
         android:orientation="vertical"
         android:background="@drawable/panel_dark_pink_bg"
-        android:padding="12dp"
-        android:visibility="gone">
+        android:padding="10dp">
 
-        <!-- 左侧菜单 -->
+        <ImageView
+            android:id="@+id/ballIcon"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center"
+            android:src="@drawable/icon_ball"
+            android:scaleType="centerCrop"
+            android:background="@drawable/ball_circle"
+            android:contentDescription="本喵悬浮球" />
+
+        <!-- 3 个选项：功能 / 设置 / 主题 -->
         <TextView
             android:id="@+id/tabFeatures"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:gravity="center"
+            android:layout_marginTop="8dp"
             android:text="功能"
             android:textSize="14sp"
             android:textColor="#FFFFFF"
@@ -40,8 +44,8 @@
             android:id="@+id/tabSettings"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_marginTop="4dp"
             android:gravity="center"
+            android:layout_marginTop="6dp"
             android:text="设置"
             android:textSize="14sp"
             android:textColor="#FFFFFF"
@@ -51,8 +55,8 @@
             android:id="@+id/tabTheme"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_marginTop="4dp"
             android:gravity="center"
+            android:layout_marginTop="6dp"
             android:text="主题"
             android:textSize="14sp"
             android:textColor="#FFFFFF"
@@ -62,20 +66,13 @@
             android:id="@+id/tabHide"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_marginTop="4dp"
             android:gravity="center"
+            android:layout_marginTop="6dp"
             android:text="隐藏悬浮"
             android:textSize="14sp"
             android:textColor="#FFFFFF"
             android:background="@drawable/panel_item_bg" />
 
     </LinearLayout>
-
-    <!-- 特效层 -->
-    <View
-        android:id="@+id/effectView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
 
 </FrameLayout>
