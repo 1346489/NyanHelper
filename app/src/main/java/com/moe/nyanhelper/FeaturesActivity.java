@@ -1,39 +1,47 @@
 package com.moe.nyanhelper;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Switch;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class FeaturesActivity extends AppCompatActivity {
 
-    private Switch swAddNya, swYouToMaster, swIToMe;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ThemeManager.apply(this, findViewById(android.R.id.content));
         setContentView(R.layout.activity_features);
-        ThemeManager.apply(this, findViewById(R.id.root));
 
-        swAddNya = findViewById(R.id.swAddNya);
-        swYouToMaster = findViewById(R.id.swYouToMaster);
-        swIToMe = findViewById(R.id.swIToMe);
+        // 关键：用 View 接收 findViewById 结果（避免 import 问题）
+        View rootView = findViewById(R.id.root);
+        if (rootView != null) {
+            ThemeManager.apply(this, rootView);
+        }
+
+        Switch swAddNya = findViewById(R.id.swAddNya);
+        Switch swYouToMaster = findViewById(R.id.swYouToMaster);
+        Switch swIToMe = findViewById(R.id.swIToMe);
 
         swAddNya.setChecked(NyanConfig.isAddNya(this));
         swYouToMaster.setChecked(NyanConfig.isYouToMaster(this));
         swIToMe.setChecked(NyanConfig.isIToMe(this));
 
-        swAddNya.setOnCheckedChangeListener((b, c) -> {
-            NyanConfig.setAddNya(this, c);
-            Toast.makeText(this, "句尾加喵：" + (c ? "开" : "关"), Toast.LENGTH_SHORT).show();
+        swAddNya.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            NyanConfig.setAddNya(this, isChecked);
+            Toast.makeText(this, "句尾加喵：" + (isChecked ? "开" : "关"), Toast.LENGTH_SHORT).show();
         });
-        swYouToMaster.setOnCheckedChangeListener((b, c) -> {
-            NyanConfig.setYouToMaster(this, c);
-            Toast.makeText(this, "你→主人：" + (c ? "开" : "关"), Toast.LENGTH_SHORT).show();
+
+        swYouToMaster.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            NyanConfig.setYouToMaster(this, isChecked);
+            Toast.makeText(this, "你→主人：" + (isChecked ? "开" : "关"), Toast.LENGTH_SHORT).show();
         });
-        swIToMe.setOnCheckedChangeListener((b, c) -> {
-            NyanConfig.setIToMe(this, c);
-            Toast.makeText(this, "我→本喵：" + (c ? "开" : "关"), Toast.LENGTH_SHORT).show();
+
+        swIToMe.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            NyanConfig.setIToMe(this, isChecked);
+            Toast.makeText(this, "我→本喵：" + (isChecked ? "开" : "关"), Toast.LENGTH_SHORT).show();
         });
     }
 }

@@ -1,46 +1,59 @@
 package com.moe.nyanhelper;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Switch;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    private Switch swSnow, swMeteor;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ThemeManager.apply(this, findViewById(android.R.id.content));
         setContentView(R.layout.activity_settings);
-        ThemeManager.apply(this, findViewById(R.id.root));
 
-        swSnow = findViewById(R.id.swSnow);
-        swMeteor = findViewById(R.id.swMeteor);
+        View rootView = findViewById(R.id.root);
+        if (rootView != null) {
+            ThemeManager.apply(this, rootView);
+        }
+
+        Switch swSnow = findViewById(R.id.swSnow);
+        Switch swMeteor = findViewById(R.id.swMeteor);
 
         swSnow.setChecked(NyanConfig.isSnow(this));
         swMeteor.setChecked(NyanConfig.isMeteor(this));
 
-        swSnow.setOnCheckedChangeListener((b, checked) -> {
-            if (checked) { NyanConfig.setMeteor(this, false); swMeteor.setChecked(false); }
-            NyanConfig.setSnow(this, checked);
-            Toast.makeText(this, "雪花特效：" + (checked ? "开" : "关"), Toast.LENGTH_SHORT).show();
-            notifyFloatRefresh();
+        swSnow.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            // 开雪花 → 自动关流星（互斥在 NyanConfig 里也做了双保险）
+            if (isChecked) {
+                NyanConfig.setMeteor(this, false);
+                swMeteor.setChecked(false);
+            }
+            NyanConfig.setSnow(this, isChecked);
+            Toast.makeText(this, "雪花：" + (isChecked ? "开" : "关"), Toast.LENGTH_SHORT).show();
+            notifyRefresh();
         });
 
-        swMeteor.setOnCheckedChangeListener((b, checked) -> {
-            if (checked) { NyanConfig.setSnow(this, false); swSnow.setChecked(false); }
-            NyanConfig.setMeteor(this, checked);
-            Toast.makeText(this, "流星特效：" + (checked ? "开" : "关"), Toast.LENGTH_SHORT).show();
-            notifyFloatRefresh();
+        swMeteor.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            // 开流星 → 自动关雪花
+            if (isChecked) {
+                NyanConfig.setSnow(this, false);
+                swSnow.setChecked(false);
+            }
+            NyanConfig.setMeteor(this, isChecked);
+            Toast.makeText(this, "流星：" + (isChecked ? "开" : "关"), Toast.LENGTH_SHORT).show();
+            notifyRefresh();
         });
     }
 
-    /** 通知 FloatService 重新读取开关并刷新特效层 */
-    private void notifyFloatRefresh() {
+    /** 通知悬浮窗刷新特效层 */
+    private void notifyRefresh() {
         if (NyanConfig.isServiceRunning(this)) {
-            startService(new Intent(this, FloatService.class).setAction("REFRESH_EFFECT"));
+            startService(new android.content.Intent(this, FloatWindowService.class)
+                    .setAction(FloatWindowService.ACTION_REFRESH_EFFECT));
         }
     }
 }

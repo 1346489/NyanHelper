@@ -1,128 +1,147 @@
 package com.moe.nyanhelper;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * 悬浮窗服务：显示 120x120 的小面板，含 3 个选项（功能/设置/主题）+
+ * 雪花/流星特效层（SnowMeteorView）。
+ *
+ * 类名统一为 FloatWindowService（Manifest 里也对应 .FloatWindowService）。
+ */
 public class FloatWindowService extends Service {
 
-    private WindowManager wm;
-    private WindowManager.LayoutParams ballParams;
-    private View floatView;
-    private ImageButton float_ball;
-    private LinearLayout float_panel;
-    private View effectView;
+    public static final String ACTION_REFRESH_EFFECT = "com.moe.nyanhelper.REFRESH_EFFECT";
+    private static final String CHANNEL_ID = "nyan_float";
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
+    private WindowManager wm;
+    private View floatView;
+    private SnowMeteorView effectView;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+        wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        createChannel();
+        startForeground(1, buildNotification());
 
-        showFloatBall();
-    }
+        LayoutInflater inflater = LayoutInflater.from(this);
+        floatView = inflater.inflate(R.layout.float_window, null);
 
-    private void showFloatBall() {
-        floatView = LayoutInflater.from(this).inflate(R.layout.float_window, null);
-
-        float_ball = floatView.findViewById(R.id.float_ball);
-        float_panel = floatView.findViewById(R.id.float_panel);
+        // 这些 id 必须在 float_window.xml 里存在，否则 cannot find symbol
         effectView = floatView.findViewById(R.id.effectView);
-
-        ballParams = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                        ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-                        : WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSLUCENT);
-
-        ballParams.gravity = Gravity.TOP | Gravity.START;
-        ballParams.x = 0;
-        ballParams.y = 300;
-
-        wm.addView(floatView, ballParams);
-
-        // 点击球 → 显示/隐藏面板
-        float_ball.setOnClickListener(v -> {
-            if (float_panel.getVisibility() == View.VISIBLE) {
-                float_panel.setVisibility(View.GONE);
-            } else {
-                float_panel.setVisibility(View.VISIBLE);
-            }
-        });
-
-        // 隐藏悬浮
-        TextView tabHide = floatView.findViewById(R.id.tabHide);
-        if (tabHide != null) {
-            tabHide.setOnClickListener(v -> {
-                hideFloat();
-            });
-        }
-
-        // 功能页
+        TextView ball = floatView.findViewById(R.id.float_ball);
         TextView tabFeatures = floatView.findViewById(R.id.tabFeatures);
-        if (tabFeatures != null) {
-            tabFeatures.setOnClickListener(v -> {
-                Intent intent = new Intent(this, FeaturesActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                float_panel.setVisibility(View.GONE);
-            });
-        }
-
-        // 设置页
         TextView tabSettings = floatView.findViewById(R.id.tabSettings);
-        if (tabSettings != null) {
-            tabSettings.setOnClickListener(v -> {
-                Intent intent = new Intent(this, SettingsActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                float_panel.setVisibility(View.GONE);
-            });
+        TextView tabTheme = floatView.findViewById(R.id.tabTheme);
+
+        if (ball != null) {
+            ball.setOnClickListener(v ->
+                    Toast.makeText(this, "本喵在～", Toast.LENGTH_SHORT).show());
         }
 
-        // 主题页
-        TextView tabTheme = floatView.findViewById(R.id.tabTheme);
-        if (tabTheme != null) {
-            tabTheme.setOnClickListener(v -> {
-                Intent intent = new Intent(this, ThemeActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                float_panel.setVisibility(View.GONE);
-            });
+        // 3 个选项：点击跳转对应 Activity
+        tabFeatures.setOnClickListener(v -> openActivity(FeaturesActivity.class));
+        tabSettings.setOnClickListener(v -> openActivity(SettingsActivity.class));
+        tabTheme.setOnClickListener(v -> openActivity(ThemeActivity.class));
+
+        int type = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+                : WindowManager.LayoutParams.TYPE_PHONE;
+
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
+                120, 120, type,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                PixelFormat.TRANSLUCENT);
+        lp.gravity = Gravity.TOP | Gravity.START;
+        lp.x = 30;
+        lp.y = 150;
+
+        if (!Settings.canDrawOverlays(this)) {
+            stopSelf();
+            return;
         }
+
+        try {
+            wm.addView(floatView, lp);
+        } catch (Exception e) {
+            stopSelf();
+            return;
+        }
+
+        if (effectView != null) {
+            effectView.refreshConfig(NyanConfig.isSnow(this), NyanConfig.isMeteor(this));
+        }
+        NyanConfig.setServiceRunning(this, true);
     }
 
-    private void hideFloat() {
-        if (floatView != null) {
-            wm.removeView(floatView);
-            floatView = null;
+    private void openActivity(Class<?> cls) {
+        Intent i = new Intent(this, cls);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        // 设置页开关变化 → 刷新特效
+        if (intent != null && ACTION_REFRESH_EFFECT.equals(intent.getAction())) {
+            if (effectView != null) {
+                effectView.refreshConfig(NyanConfig.isSnow(this), NyanConfig.isMeteor(this));
+            }
         }
-        stopSelf();
+        return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
-        if (floatView != null) {
-            wm.removeView(floatView);
-            floatView = null;
+        if (floatView != null && wm != null) {
+            try { wm.removeView(floatView); } catch (Exception ignored) {}
         }
+        if (effectView != null) {
+            effectView.refreshConfig(false, false);
+        }
+        NyanConfig.setServiceRunning(this, false);
+        super.onDestroy();
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) { return null; }
+
+    private void createChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel ch = new NotificationChannel(
+                    CHANNEL_ID, "本喵悬浮窗", NotificationManager.IMPORTANCE_LOW);
+            NotificationManager nm = getSystemService(NotificationManager.class);
+            if (nm != null) nm.createNotificationChannel(ch);
+        }
+    }
+
+    private Notification buildNotification() {
+        Intent i = new Intent(this, MainActivity.class);
+        PendingIntent pi = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_IMMUTABLE);
+        Notification.Builder b = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                ? new Notification.Builder(this, CHANNEL_ID)
+                : new Notification.Builder(this);
+        return b.setContentTitle("本喵助手")
+                .setContentText("悬浮窗运行中")
+                .setSmallIcon(android.R.drawable.ic_menu_view)
+                .setContentIntent(pi)
+                .build();
     }
 }

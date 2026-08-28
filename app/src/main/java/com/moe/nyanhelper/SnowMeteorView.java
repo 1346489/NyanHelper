@@ -14,141 +14,148 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * 雪花 + 流星 特效视图。
- * - 雪花：白色圆点，从顶部缓慢下落 + 左右飘，限定在左上区域
- * - 流星：从右上向左下坠落，带尾迹 + 头部亮点
- * 通过 refreshConfig(snow, meteor) 开关，由 FloatService 在设置变化时调用。
+ * 悬浮球内的特效层：雪花（左上区域）+ 流星（右上斜落）。
+ * 继承 SurfaceView，自己在子线程绘制，避免阻塞主线程。
  */
-public class SnowMeteorView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
+public class SnowMeteorView extends SurfaceView implements SurfaceHolder.Callback {
 
-    private final SurfaceHolder holder;
-    private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Random rnd = new Random();
-    private Thread thread;
-    private boolean running;
-
-    private boolean snow, meteor;
-    private final List<float[]> snows = new ArrayList<>();
+    private final Paint paint;
+    private final List<float[]> snow = new ArrayList<>();
     private final List<float[]> meteors = new ArrayList<>();
+    private final Random rand = new Random();
+
+    private boolean running;
+    private Thread thread;
+    private boolean snowOn;
+    private boolean meteorOn;
     private int w, h;
 
     public SnowMeteorView(Context context) {
         super(context);
+        // 关键：通过 getHolder() 获取 SurfaceHolder，不把 int 当 SurfaceHolder 用
+        getHolder().addCallback(this);
+        getHolder().setFormat(PixelFormat.TRANSLUCENT);
         setZOrderOnTop(true);
-        holder = getHolder();
-        holder.setFormat(PixelFormat.TRANSLUCENT);
-        holder.addCallback(this);
+        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setColor(Color.WHITE);
+        refreshConfig(NyanConfig.isSnow(context), NyanConfig.isMeteor(context));
     }
 
-    /** 设置开关；线程安全（surface 未创建时也能缓存配置） */
+    /** 设置页开关变化时调用，刷新特效开关状态 */
     public void refreshConfig(boolean snow, boolean meteor) {
-        this.snow = snow;
-        this.meteor = meteor;
-        if (snow && w > 0) initSnow();
-        else snows.clear();
-        if (meteor && w > 0) initMeteor();
-        else meteors.clear();
-    }
-
-    private void initSnow() {
-        snows.clear();
-        int count = Math.max(20, w * h / 12000);
-        for (int i = 0; i < count; i++) {
-            snows.add(new float[]{
-                    rnd.nextFloat() * w,           // x（左上区域）
-                    rnd.nextFloat() * h,
-                    2 + rnd.nextFloat() * 4,        // 半径
-                    0.6f + rnd.nextFloat() * 1.6f,  // 下落速度
-                    120 + rnd.nextInt(120)          // 透明度
-            });
-        }
-    }
-
-    private void initMeteor() {
-        meteors.clear();
-        for (int i = 0; i < 4; i++) {
-            meteors.add(new float[]{
-                    rnd.nextFloat() * w * 0.7f,     // x（右上区域起点）
-                    rnd.nextFloat() * h * 0.4f,
-                    4 + rnd.nextFloat() * 4,        // 速度 x
-                    2 + rnd.nextFloat() * 3,        // 速度 y
-                    140 + rnd.nextInt(110)          // 透明度
-            });
-        }
+        this.snowOn = snow;
+        this.meteorOn = meteor;
+        if (!snowOn) snow.clear();
+        if (!meteorOn) meteors.clear();
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder h) {
+    public void surfaceCreated(SurfaceHolder holder) {
         w = getWidth();
         h = getHeight();
-        refreshConfig(snow, meteor);
+        ensureParticles();
         running = true;
-        thread = new Thread(this);
+        thread = new Thread(this::runDraw);
         thread.start();
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder h, int format, int width, int height) {
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         w = width;
         h = height;
-        refreshConfig(snow, meteor);
+        ensureParticles();
     }
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder h) {
+    public void surfaceDestroyed(SurfaceHolder holder) {
         running = false;
         if (thread != null) {
             try { thread.join(500); } catch (InterruptedException ignored) {}
-            thread = null;
+        }
+        snow.clear();
+        meteors.clear();
+    }
+
+    /** 补齐粒子（数量控制，避免太多卡顿）*/
+    private void ensureParticles() {
+        if (w <= 0 || h <= 0) return;
+
+        if (snowOn && snow.size() < 30) {
+            for (int i = snow.size(); i < 30; i++) {
+                snow.add(new float[]{
+                        rand.nextFloat() * w,          // x
+                        rand.nextFloat() * h,          // y
+                        1f + rand.nextFloat() * 2f,    // 下落速度
+                        120 + rand.nextInt(80)         // 透明度
+                });
+            }
+        }
+
+        if (meteorOn && meteors.size() < 2) {
+            for (int i = meteors.size(); i < 2; i++) {
+                meteors.add(new float[]{
+                        rand.nextFloat() * w,          // x
+                        rand.nextFloat() * h * 0.5f,   // y（上半区）
+                        6f + rand.nextFloat() * 4f,    // 水平速度
+                        180 + rand.nextInt(60),        // 透明度
+                        200 + rand.nextInt(55)         // 生命周期
+                });
+            }
         }
     }
 
-    public void stop() {
-        running = false;
-    }
-
-    @Override
-    public void run() {
+    private void runDraw() {
         while (running) {
+            // 正确用法：holder 是 SurfaceHolder（来自 getHolder()），不是 int
+            SurfaceHolder holder = getHolder();
             Canvas canvas = null;
             try {
                 canvas = holder.lockCanvas();
                 if (canvas == null) continue;
                 synchronized (holder) {
                     canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-                    if (snow)   drawSnow(canvas);
-                    if (meteor) drawMeteor(canvas);
+                    if (snowOn) drawSnow(canvas);
+                    if (meteorOn) drawMeteor(canvas);
                 }
             } finally {
-                if (canvas != null) holder.unlockCanvasAndPost(canvas);
+                if (canvas != null) {
+                    try { holder.unlockCanvasAndPost(canvas); } catch (Exception ignored) {}
+                }
             }
-            try { Thread.sleep(30); } catch (InterruptedException e) { break; }
+            try { Thread.sleep(30); } catch (InterruptedException e) { running = false; }
         }
     }
 
     private void drawSnow(Canvas canvas) {
         paint.setColor(Color.WHITE);
-        for (float[] p : snows) {
-            p[0] += Math.sin(p[1] / 30f) * 0.5f;  // 左右飘
-            p[1] += p[3];                           // 下落
-            if (p[1] > h) { p[1] = -10; p[0] = rnd.nextFloat() * w * 0.6f; }
-            paint.setAlpha((int) p[4]);
-            canvas.drawCircle(p[0], p[1], p[2], paint);
+        for (float[] p : snow) {
+            paint.setAlpha((int) p[3]);
+            canvas.drawCircle(p[0], p[1], 2f + p[2] * 0.3f, paint);
+            p[1] += p[2];       // 下落
+            p[0] += 0.3f;       // 微风飘
+            if (p[1] > h) {
+                p[1] = -10;
+                p[0] = rand.nextFloat() * Math.max(w, 1);
+            }
         }
     }
 
     private void drawMeteor(Canvas canvas) {
-        paint.setColor(Color.parseColor("#FFE6F2"));
+        paint.setColor(Color.WHITE);
         for (float[] m : meteors) {
-            m[0] += m[2];   // 向右下（右上起点 → 实际向右下）
-            m[1] += m[3];
-            if (m[0] > w || m[1] > h) {
-                m[0] = rnd.nextFloat() * w * 0.5f - 60;
-                m[1] = rnd.nextFloat() * h * 0.3f;
+            paint.setAlpha((int) m[3]);
+            // 尾迹
+            canvas.drawLine(m[0], m[1], m[0] - 18, m[1] + 8, paint);
+            // 头部亮点
+            canvas.drawCircle(m[0], m[1], 2f, paint);
+            m[0] += m[2];
+            m[1] += m[2] * 0.45f;
+            m[3] -= 4;          // 逐渐消失
+            if (m[0] > w || m[1] > h || m[3] <= 0) {
+                m[0] = rand.nextFloat() * Math.max(w, 1) * 0.8f;
+                m[1] = -20;
+                m[3] = 180 + rand.nextInt(60);
             }
-            paint.setAlpha((int) m[4]);
-            canvas.drawLine(m[0], m[1], m[0] - 20, m[1] + 10, paint); // 尾迹
-            canvas.drawCircle(m[0], m[1], 2.5f, paint);              // 头部亮点
         }
     }
 }
