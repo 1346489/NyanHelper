@@ -1,5 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">本喵助手</string>
+    <string name="tagline">让文字变得可爱喵~</string>
     <string name="accessibility_desc">本喵助手无障碍辅助，用于全局文字替换</string>
+
+    <string name="status_float_off">❌ 悬浮窗权限未开启</string>
+    <string name="status_float_on">✅ 悬浮窗权限已开启</string>
+    <string name="status_access_off">❌ 无障碍服务未开启</string>
+    <string name="status_access_on">✅ 无障碍服务已开启</string>
+    <string name="status_service_off">⚪ 悬浮窗服务未运行</string>
+    <string name="status_service_on">🟢 悬浮窗服务运行中</string>
+
+    <string name="btn_float_on">开启悬浮窗</string>
+    <string name="btn_float_off">关闭悬浮窗</string>
+    <string name="btn_access">去开启无障碍服务</string>
+    <string name="btn_refresh">刷新状态</string>
+
+    <string name="panel_title">本喵设置</string>
+    <string name="sw_add_nya">结尾加喵字</string>
+    <string name="sw_me">我 替换为 本喵</string>
+    <string name="sw_you">你 替换为 主人</string>
+
+    <string name="toast_grant_overlay">请先授予悬浮窗权限喵~</string>
+    <string name="toast_float_started">悬浮窗已开启喵~</string>
+    <string name="toast_float_stopped">悬浮窗已关闭喵~</string>
+    <string name="channel_name">本喵助手</string>
+    <string name="channel_desc">悬浮窗服务运行中喵~</string>
 </resources>
