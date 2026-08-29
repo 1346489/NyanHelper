@@ -1,17 +1,11 @@
-// Top-level build file
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
-    }
+// Top-level build file — AGP 8.x plugins DSL
+// 注意：仓库统一在 settings.gradle 的 dependencyResolutionManagement 中声明，
+// 此处不再写 allprojects/buildscript（避免 "DependencyHandler.module" 类报错）。
+plugins {
+    id 'com.android.application' version '8.5.2' apply false
+    id 'com.android.library' version '8.5.2' apply false
 }
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
+tasks.register('clean', Delete) {
+    delete rootProject.buildDir
 }
