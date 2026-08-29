@@ -23,7 +23,7 @@
     <string name="copy">复制</string>
     <string name="this_app_is_free">本软件免费如果你是买来的恭喜你被骗啦~</string>
     <string name="announcement1">此应用公益，不要被骗了</string>
-    <string name="announcement2">注入功能已更新，请放心使用</string>
+    <string name="announcement2">功能已更新，请放心使用～\n\n所有功能均通过无障碍权限实现，请勿用于违规用途。</string>
     <string name="menu_announcement">公告</string>
     <string name="menu_functions">功能</string>
     <string name="menu_settings">设置</string>
@@ -31,7 +31,7 @@
     <string name="menu_theme">主题</string>
     <string name="menu_exit">退出</string>
     <string name="func_add_miao">始终在结尾添加"喵"字</string>
-    <string name="func_replace_me">将"我"自动换为"本喵</string>
+    <string name="func_replace_me">将"我"自动换为"本喵"</string>
     <string name="func_replace_you">将"你"自动换为"主人"</string>
     <string name="setting_snow">雪花</string>
     <string name="setting_meteor">流星雨</string>
