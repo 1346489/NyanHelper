@@ -4,6 +4,6 @@
     android:layout_width="64dp"
     android:layout_height="64dp"
     android:src="@drawable/floating_ball_icon"
-    android:background="@drawable/ball_bg"
+    android:background="@android:color/transparent"
     android:scaleType="centerCrop"
     android:contentDescription="悬浮球" />
