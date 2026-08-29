@@ -1,4 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- AppTheme 统一定义在 themes.xml，这里不再重复，避免 Duplicate resources -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.Benmao" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/pink_primary</item>
+        <item name="colorPrimaryDark">@color/pink_primary_dark</item>
+        <item name="colorAccent">@color/pink_accent</item>
+        <item name="android:windowBackground">@color/bg_white</item>
+        <item name="android:statusBarColor" tools:targetApi="l">@color/pink_primary_dark</item>
+    </style>
+
+    <style name="Theme.Benmao.Dark" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="colorPrimary">@color/pink_primary</item>
+        <item name="colorPrimaryDark">@color/pink_primary_dark</item>
+        <item name="colorAccent">@color/pink_accent</item>
+        <item name="android:windowBackground">@color/dark_bg</item>
+        <item name="android:statusBarColor" tools:targetApi="l">@color/dark_bg</item>
+    </style>
+
+    <!-- Switch style -->
+    <style name="BenmaoSwitch" parent="Widget.MaterialComponents.CompoundButton.SwitchCompat">
+        <item name="thumbTint">@color/pink_primary</item>
+        <item name="trackTint">@color/pink_light</item>
+    </style>
+
 </resources>

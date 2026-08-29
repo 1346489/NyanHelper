@@ -1,6 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#FF8FBC</color>
-    <color name="primary_dark">#FF5C8D</color>
-    <color name="accent">#DDC7FF</color>
+    <!-- 主粉色系 -->
+    <color name="pink_primary">#xFFFF69B4</color>
+    <color name="pink_primary_dark">#xFFC71585</color>
+    <color name="pink_light">#xFFFFB6C1</color>
+    <color name="pink_accent">#xFFFF1493</color>
+
+    <!-- 背景色选项 -->
+    <color name="bg_pink">#xFFFFE4EC</color>
+    <color name="bg_white">#xFFFFFFFF</color>
+    <color name="bg_dark">#xFF2D2D30</color>
+
+    <!-- 文字色选项 -->
+    <color name="text_black">#xFF000000</color>
+    <color name="text_white">#xFFFFFFFF</color>
+    <color name="text_purple">#xFF8B008B</color>
+
+    <!-- 深色模式 -->
+    <color name="dark_bg">#xFF1A1A2E</color>
+    <color name="dark_card">#xFF16213E</color>
+    <color name="dark_text">#xFFEAEAEA</color>
+
+    <!-- 通用 -->
+    <color name="white">#xFFFFFFFF</color>
+    <color name="black">#xFF000000</color>
+    <color name="gray">#xFF888888</color>
+    <color name="green">#xFF4CAF50</color>
+    <color name="red">#xFFE53935</color>
+    <color name="overlay_bg">#xFF2A2A3E</color>
+    <color name="overlay_card">#xFF3A3A5C</color>
+    <color name="overlay_text">#xFFEAEAEA</color>
+    <color name="overlay_subtext">#xFFAAAAAA</color>
+    <color name="pink_ripple">#xFFFF69B4</color>
 </resources>
