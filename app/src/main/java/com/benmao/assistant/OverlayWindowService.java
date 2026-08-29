@@ -196,6 +196,7 @@ public class OverlayWindowService extends Service {
 
     private void buildMenu() {
         m = WindowMenuBinding.inflate(LayoutInflater.from(this));
+        menuView = m.getRoot();
         menuParams = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT,
@@ -370,7 +371,7 @@ public class OverlayWindowService extends Service {
         for (int i = 0; i < viewIds.length; i++) {
             View v = root.findViewById(viewIds[i]);
             if (v != null) {
-                            v.setAlpha(i == selectedIndex ? 1f : 0.45f);
+                v.setAlpha(i == selectedIndex ? 1f : 0.45f);
             }
         }
     }
