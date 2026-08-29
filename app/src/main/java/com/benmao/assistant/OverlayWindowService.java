@@ -305,7 +305,6 @@ public class OverlayWindowService extends Service {
         m.pageTheme.setVisibility(index == 4 ? View.VISIBLE : View.GONE);
     }
 
-    private ParticleView particleView;
 
     // 给选中的颜色圆点加白色描边，未选中的恢复默认
     private void updateColorSelection(int[] viewIds, int selectedIndex) {
