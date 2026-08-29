@@ -133,7 +133,6 @@ public class OverlayWindowService extends Service {
                     return true;
                 case MotionEvent.ACTION_UP:
                     if (!isMoving) {
-                        // 点击 -> 打开菜单（带动画）
                         openMenuWithAnimation();
                     }
                     return true;
@@ -148,7 +147,6 @@ public class OverlayWindowService extends Service {
         if (menuShown) return;
         hideBall();
         showMenu();
-        // 打开动画：从悬浮球位置缩放展开
         if (menuView != null) {
             ScaleAnimation sa = new ScaleAnimation(0.2f, 1f, 0.2f, 1f,
                     menuView.getWidth() / 2f, menuView.getHeight() / 2f);
@@ -320,11 +318,8 @@ public class OverlayWindowService extends Service {
 
     private void updateParticle() {
         if (m == null) return;
-        if (particleView == null) {
-            particleView = new ParticleView(this);
-            m.particleContainer.addView(particleView);
-        }
-        particleView.setMode(prefs.isMeteor() ? 1 : (prefs.isSnow() ? 0 : -1));
+        // m.particleContainer 就是 XML 里的 ParticleView，直接设模式，不用 addView
+        m.particleContainer.setMode(prefs.isMeteor() ? 1 : (prefs.isSnow() ? 0 : -1));
     }
 
     @Override
