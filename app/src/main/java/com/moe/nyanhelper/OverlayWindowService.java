@@ -334,10 +334,7 @@ public class OverlayWindowService extends Service {
         TextView announcement1 = overlayWindow.findViewById(R.id.announcement_1);
         TextView announcement2 = overlayWindow.findViewById(R.id.announcement_2);
         announcement1.setText(R.string.announcement1);
-        announcement2.setText("注入功能已更新，请放心使用\n\n" +
-                "1. 确保已开启无障碍权限\n" +
-                "2. 功能开关需分别开启\n" +
-                "3. 如有问题请重装应用");
+        announcement2.setText(R.string.announcement2);
     }
 
     // ===================== PAGE: FUNCTIONS =====================
