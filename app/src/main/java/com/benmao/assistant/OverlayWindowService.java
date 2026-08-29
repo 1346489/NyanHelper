@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ServiceInfo;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.IBinder;
@@ -45,6 +46,7 @@ public class OverlayWindowService extends Service {
     private int initialX, initialY;
     private boolean isMoving = false;
 
+    private int overlayType;   // 悬浮窗类型（兼容 API26 以下）
     private Prefs prefs;
     private WindowMenuBinding m;
 
@@ -76,6 +78,10 @@ public class OverlayWindowService extends Service {
         super.onCreate();
         prefs = new Prefs(this);
         wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+        // 悬浮窗类型兼容：API26+ 用 TYPE_APPLICATION_OVERLAY，旧版用 TYPE_PHONE
+        overlayType = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+                : WindowManager.LayoutParams.TYPE_PHONE;
 
         startForegroundCompat();
 
@@ -99,7 +105,12 @@ public class OverlayWindowService extends Service {
                 .setContentText("悬浮窗运行中")
                 .setSmallIcon(android.R.drawable.ic_menu_info_details)
                 .build();
-        startForeground(1, notification);
+        // Android 14+ 必须传前台服务类型，否则 MissingForegroundServiceTypeException 崩溃
+        if (Build.VERSION.SDK_INT >= 34) {
+            startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
+        } else {
+            startForeground(1, notification);
+        }
     }
 
     private void createBall() {
@@ -107,7 +118,7 @@ public class OverlayWindowService extends Service {
         ballParams = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                overlayType,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT);
         ballParams.gravity = Gravity.TOP | Gravity.START;
@@ -140,7 +151,13 @@ public class OverlayWindowService extends Service {
             return false;
         });
 
-        wm.addView(ballView, ballParams);
+        // 捕获悬浮窗权限未真正授予导致的崩溃（国产 ROM 常见）
+        try {
+            wm.addView(ballView, ballParams);
+        } catch (Exception e) {
+            Toast.makeText(this, "悬浮窗显示失败，请在系统设置允许「显示悬浮窗」", Toast.LENGTH_LONG).show();
+            stopSelf();
+        }
     }
 
     private void openMenuWithAnimation() {
@@ -178,155 +195,4 @@ public class OverlayWindowService extends Service {
     }
 
     private void buildMenu() {
-        m = WindowMenuBinding.inflate(LayoutInflater.from(this));
-        menuView = m.getRoot();
-        menuParams = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                0,
-                PixelFormat.TRANSLUCENT);
-        menuParams.gravity = Gravity.CENTER;
-        wm.addView(m.getRoot(), menuParams);
-        menuShown = true;
-
-        applyTheme();
-        setupMenu();
-    }
-
-    private void applyTheme() {
-        if (m == null) return;
-        int bg = bgColors[bgIndex];
-        int tc = textColors[textIndex];
-        m.menuRoot.setBackgroundColor(bg);
-        // 递归设置文字颜色
-        setTextColor(m.menuRoot, tc);
-    }
-
-    private void setTextColor(View view, int color) {
-        if (view instanceof TextView) {
-            ((TextView) view).setTextColor(color);
-        } else if (view instanceof SwitchCompat) {
-            // Switch 保持原样
-        }
-        if (view instanceof ViewGroup) {
-            ViewGroup vg = (ViewGroup) view;
-            for (int i = 0; i < vg.getChildCount(); i++) {
-                setTextColor(vg.getChildAt(i), color);
-            }
-        }
-    }
-
-    private void setupMenu() {
-        // 左侧菜单项点击
-        m.navAnnounce.setOnClickListener(v -> showPage(0));
-        m.navFunction.setOnClickListener(v -> showPage(1));
-        m.navSettings2.setOnClickListener(v -> showPage(2));
-        m.navControl.setOnClickListener(v -> showPage(3));
-        m.navTheme.setOnClickListener(v -> showPage(4));
-
-        // 关闭（X）-> 变回悬浮球
-        m.btnClose.setOnClickListener(v -> {
-            hideMenu();
-            showBall();
-        });
-
-        // ---- 功能页：三个开关（无障碍实现） ----
-        m.switchAddMeow.setOnCheckedChangeListener((b, c) -> prefs.setAddMeow(c));
-        m.switchReplaceMe.setOnCheckedChangeListener((b, c) -> prefs.setReplaceMe(c));
-        m.switchReplaceYou.setOnCheckedChangeListener((b, c) -> prefs.setReplaceYou(c));
-        m.switchAddMeow.setChecked(prefs.isAddMeow());
-        m.switchReplaceMe.setChecked(prefs.isReplaceMe());
-        m.switchReplaceYou.setChecked(prefs.isReplaceYou());
-
-        // ---- 设置页：雪花 / 流星雨（互斥） ----
-        m.switchSnow.setOnCheckedChangeListener((b, c) -> {
-            if (c) { prefs.setSnow(true); prefs.setMeteor(false); m.switchMeteor.setChecked(false); }
-            else prefs.setSnow(false);
-            updateParticle();
-        });
-        m.switchMeteor.setOnCheckedChangeListener((b, c) -> {
-            if (c) { prefs.setMeteor(true); prefs.setSnow(false); m.switchSnow.setChecked(false); }
-            else prefs.setMeteor(false);
-            updateParticle();
-        });
-        m.switchSnow.setChecked(prefs.isSnow());
-        m.switchMeteor.setChecked(prefs.isMeteor());
-
-        // ---- 控制页：音量键隐藏（默认开） ----
-        m.switchVolumeHide.setChecked(prefs.isVolumeHide());
-        m.switchVolumeHide.setOnCheckedChangeListener((b, c) -> prefs.setVolumeHide(c));
-
-        // ---- 主题页 ----
-        // 背景：白(0)/粉(1)/深色(2)；文字：黑(0)/白(1)/紫(2)
-        final int[] bgViews = {R.id.color_bg_white, R.id.color_bg_pink, R.id.color_bg_dark};
-        final int[] textViews = {R.id.color_text_black, R.id.color_text_white, R.id.color_text_purple};
-
-        View.OnClickListener bgClick = v -> {
-            bgIndex = (int) v.getTag();
-            applyTheme();
-            updateColorSelection(bgViews, bgIndex);
-        };
-        m.colorBgWhite.setTag(0); m.colorBgPink.setTag(1); m.colorBgDark.setTag(2);
-        m.colorBgWhite.setOnClickListener(bgClick);
-        m.colorBgPink.setOnClickListener(bgClick);
-        m.colorBgDark.setOnClickListener(bgClick);
-
-        View.OnClickListener textClick = v -> {
-            textIndex = (int) v.getTag();
-            applyTheme();
-            updateColorSelection(textViews, textIndex);
-        };
-        m.colorTextBlack.setTag(0); m.colorTextWhite.setTag(1); m.colorTextPurple.setTag(2);
-        m.colorTextBlack.setOnClickListener(textClick);
-        m.colorTextWhite.setOnClickListener(textClick);
-        m.colorTextPurple.setOnClickListener(textClick);
-
-        m.btnResetTheme.setOnClickListener(v -> {
-            bgIndex = 0; textIndex = 0; // 白底黑字
-            applyTheme();
-            updateColorSelection(bgViews, bgIndex);
-            updateColorSelection(textViews, textIndex);
-        });
-
-        updateColorSelection(bgViews, bgIndex);
-        updateColorSelection(textViews, textIndex);
-
-        showPage(0);
-    }
-
-    private void showPage(int index) {
-        m.pageAnnounce.setVisibility(index == 0 ? View.VISIBLE : View.GONE);
-        m.pageFunction.setVisibility(index == 1 ? View.VISIBLE : View.GONE);
-        m.pageSettings2.setVisibility(index == 2 ? View.VISIBLE : View.GONE);
-        m.pageControl.setVisibility(index == 3 ? View.VISIBLE : View.GONE);
-        m.pageTheme.setVisibility(index == 4 ? View.VISIBLE : View.GONE);
-    }
-
-
-    // 给选中的颜色圆点加白色描边，未选中的恢复默认
-    private void updateColorSelection(int[] viewIds, int selectedIndex) {
-        if (m == null) return;
-        View root = m.getRoot();
-        for (int i = 0; i < viewIds.length; i++) {
-            View v = root.findViewById(viewIds[i]);
-            if (v != null) {
-                v.setAlpha(i == selectedIndex ? 1f : 0.45f);
-            }
-        }
-    }
-
-    private void updateParticle() {
-        if (m == null) return;
-        // m.particleContainer 就是 XML 里的 ParticleView，直接设模式，不用 addView
-        m.particleContainer.setMode(prefs.isMeteor() ? 1 : (prefs.isSnow() ? 0 : -1));
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (ballView != null) wm.removeView(ballView);
-        if (menuView != null) wm.removeView(menuView);
-        try { unregisterReceiver(volumeReceiver); } catch (Exception ignored) {}
-    }
-}
+    
