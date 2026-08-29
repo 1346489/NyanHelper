@@ -2,42 +2,34 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.benmao.assistant">
 
-    <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="34" />
-
-    <!-- 悬浮窗权限（Android 6.0+ 通过 Settings.canDrawOverlays 运行时申请） -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-
-    <!-- 音量键监听 -->
-    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENTS" />
+    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" />
 
     <application
         android:allowBackup="true"
         android:label="@string/app_name"
-        android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Benmao">
+        android:theme="@style/Theme.Benmao"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round">
 
         <activity
             android:name=".MainActivity"
-            android:exported="true"
-            android:configChanges="orientation|screenSize">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- 悬浮窗服务 -->
         <service
             android:name=".OverlayWindowService"
             android:exported="false" />
 
-        <!-- 无障碍服务 -->
         <service
             android:name=".BenmaoAccessibilityService"
-            android:exported="true"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
@@ -45,7 +37,5 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_service_config" />
         </service>
-
     </application>
-
 </manifest>
