@@ -196,7 +196,6 @@ public class OverlayWindowService extends Service {
 
     private void buildMenu() {
         m = WindowMenuBinding.inflate(LayoutInflater.from(this));
-        menuView = m.getRoot();
         menuParams = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT,
@@ -208,6 +207,7 @@ public class OverlayWindowService extends Service {
             wm.addView(m.getRoot(), menuParams);
         } catch (Exception e) {
             Toast.makeText(this, "菜单显示失败：" + e.getMessage(), Toast.LENGTH_LONG).show();
+            menuView = null;
             return;
         }
         menuShown = true;
@@ -220,9 +220,20 @@ public class OverlayWindowService extends Service {
         if (m == null) return;
         int bg = bgColors[bgIndex];
         int tc = textColors[textIndex];
-        m.menuRoot.setBackgroundColor(bg);
+        if (m.menuRoot != null) m.menuRoot.setBackgroundColor(bg);
         // 递归设置文字颜色
-        setTextColor(m.menuRoot, tc);
+        if (m.menuRoot != null) setTextColor(m.menuRoot, tc);
+    }
+
+    // 统一异常兜底：悬浮窗内任何操作出错都只提示、不崩溃
+    private void safeRun(Runnable r) {
+        try {
+            r.run();
+        } catch (Throwable t) {
+            try {
+                Toast.makeText(this, "操作出错：" + t.getMessage(), Toast.LENGTH_LONG).show();
+            } catch (Exception ignored) {}
+        }
     }
 
     private void setTextColor(View view, int color) {
@@ -240,76 +251,100 @@ public class OverlayWindowService extends Service {
     }
 
     private void setupMenu() {
+        if (m == null) return;
         // 左侧菜单项点击
-        m.navAnnounce.setOnClickListener(v -> showPage(0));
-        m.navFunction.setOnClickListener(v -> showPage(1));
-        m.navSettings2.setOnClickListener(v -> showPage(2));
-        m.navControl.setOnClickListener(v -> showPage(3));
-        m.navTheme.setOnClickListener(v -> showPage(4));
+        safeRun(() -> m.navAnnounce.setOnClickListener(v -> safeRun(() -> showPage(0))));
+        safeRun(() -> m.navFunction.setOnClickListener(v -> safeRun(() -> showPage(1))));
+        safeRun(() -> m.navSettings2.setOnClickListener(v -> safeRun(() -> showPage(2))));
+        safeRun(() -> m.navControl.setOnClickListener(v -> safeRun(() -> showPage(3))));
+        safeRun(() -> m.navTheme.setOnClickListener(v -> safeRun(() -> showPage(4))));
 
         // 关闭（X）-> 变回悬浮球
-        m.btnClose.setOnClickListener(v -> {
+        safeRun(() -> m.btnClose.setOnClickListener(v -> safeRun(() -> {
             hideMenu();
             showBall();
-        });
+        })));
 
         // ---- 功能页：三个开关（无障碍实现） ----
-        m.switchAddMeow.setOnCheckedChangeListener((b, c) -> prefs.setAddMeow(c));
-        m.switchReplaceMe.setOnCheckedChangeListener((b, c) -> prefs.setReplaceMe(c));
-        m.switchReplaceYou.setOnCheckedChangeListener((b, c) -> prefs.setReplaceYou(c));
-        m.switchAddMeow.setChecked(prefs.isAddMeow());
-        m.switchReplaceMe.setChecked(prefs.isReplaceMe());
-        m.switchReplaceYou.setChecked(prefs.isReplaceYou());
+        safeRun(() -> m.switchAddMeow.setOnCheckedChangeListener((b, c) -> safeRun(() -> prefs.setAddMeow(c))));
+        safeRun(() -> m.switchReplaceMe.setOnCheckedChangeListener((b, c) -> safeRun(() -> prefs.setReplaceMe(c))));
+        safeRun(() -> m.switchReplaceYou.setOnCheckedChangeListener((b, c) -> safeRun(() -> prefs.setReplaceYou(c))));
+        safeRun(() -> m.switchAddMeow.setChecked(prefs.isAddMeow()));
+        safeRun(() -> m.switchReplaceMe.setChecked(prefs.isReplaceMe()));
+        safeRun(() -> m.switchReplaceYou.setChecked(prefs.isReplaceYou()));
 
         // ---- 设置页：雪花 / 流星雨（互斥） ----
-        m.switchSnow.setOnCheckedChangeListener((b, c) -> {
-            if (c) { prefs.setSnow(true); prefs.setMeteor(false); m.switchMeteor.setChecked(false); }
-            else prefs.setSnow(false);
+        safeRun(() -> m.switchSnow.setOnCheckedChangeListener((b, c) -> safeRun(() -> {
+            if (c) {
+                prefs.setSnow(true);
+                prefs.setMeteor(false);
+                if (m.switchMeteor != null) m.switchMeteor.setChecked(false);
+            } else {
+                prefs.setSnow(false);
+            }
             updateParticle();
-        });
-        m.switchMeteor.setOnCheckedChangeListener((b, c) -> {
-            if (c) { prefs.setMeteor(true); prefs.setSnow(false); m.switchSnow.setChecked(false); }
-            else prefs.setMeteor(false);
+        })));
+
+        safeRun(() -> m.switchMeteor.setOnCheckedChangeListener((b, c) -> safeRun(() -> {
+            if (c) {
+                prefs.setMeteor(true);
+                prefs.setSnow(false);
+                if (m.switchSnow != null) m.switchSnow.setChecked(false);
+            } else {
+                prefs.setMeteor(false);
+            }
             updateParticle();
-        });
-        m.switchSnow.setChecked(prefs.isSnow());
-        m.switchMeteor.setChecked(prefs.isMeteor());
+        })));
+
+        safeRun(() -> m.switchSnow.setChecked(prefs.isSnow()));
+        safeRun(() -> m.switchMeteor.setChecked(prefs.isMeteor()));
 
         // ---- 控制页：音量键隐藏（默认开） ----
-        m.switchVolumeHide.setChecked(prefs.isVolumeHide());
-        m.switchVolumeHide.setOnCheckedChangeListener((b, c) -> prefs.setVolumeHide(c));
+        safeRun(() -> m.switchVolumeHide.setChecked(prefs.isVolumeHide()));
+        safeRun(() -> m.switchVolumeHide.setOnCheckedChangeListener((b, c) -> safeRun(() -> prefs.setVolumeHide(c))));
 
         // ---- 主题页 ----
         // 背景：白(0)/粉(1)/深色(2)；文字：黑(0)/白(1)/紫(2)
         final int[] bgViews = {R.id.color_bg_white, R.id.color_bg_pink, R.id.color_bg_dark};
         final int[] textViews = {R.id.color_text_black, R.id.color_text_white, R.id.color_text_purple};
 
-        View.OnClickListener bgClick = v -> {
-            bgIndex = (int) v.getTag();
-            applyTheme();
-            updateColorSelection(bgViews, bgIndex);
-        };
-        m.colorBgWhite.setTag(0); m.colorBgPink.setTag(1); m.colorBgDark.setTag(2);
-        m.colorBgWhite.setOnClickListener(bgClick);
-        m.colorBgPink.setOnClickListener(bgClick);
-        m.colorBgDark.setOnClickListener(bgClick);
+        // 安全解析 tag：避免 (int)null 空指针崩溃
+        View.OnClickListener bgClick = v -> safeRun(() -> {
+            Object tag = v.getTag();
+            if (tag instanceof Integer) {
+                bgIndex = (Integer) tag;
+                applyTheme();
+                updateColorSelection(bgViews, bgIndex);
+            }
+        });
+        safeRun(() -> {
+            m.colorBgWhite.setTag(0); m.colorBgPink.setTag(1); m.colorBgDark.setTag(2);
+            m.colorBgWhite.setOnClickListener(bgClick);
+            m.colorBgPink.setOnClickListener(bgClick);
+            m.colorBgDark.setOnClickListener(bgClick);
+        });
 
-        View.OnClickListener textClick = v -> {
-            textIndex = (int) v.getTag();
-            applyTheme();
-            updateColorSelection(textViews, textIndex);
-        };
-        m.colorTextBlack.setTag(0); m.colorTextWhite.setTag(1); m.colorTextPurple.setTag(2);
-        m.colorTextBlack.setOnClickListener(textClick);
-        m.colorTextWhite.setOnClickListener(textClick);
-        m.colorTextPurple.setOnClickListener(textClick);
+        View.OnClickListener textClick = v -> safeRun(() -> {
+            Object tag = v.getTag();
+            if (tag instanceof Integer) {
+                textIndex = (Integer) tag;
+                applyTheme();
+                updateColorSelection(textViews, textIndex);
+            }
+        });
+        safeRun(() -> {
+            m.colorTextBlack.setTag(0); m.colorTextWhite.setTag(1); m.colorTextPurple.setTag(2);
+            m.colorTextBlack.setOnClickListener(textClick);
+            m.colorTextWhite.setOnClickListener(textClick);
+            m.colorTextPurple.setOnClickListener(textClick);
+        });
 
-        m.btnResetTheme.setOnClickListener(v -> {
+        safeRun(() -> m.btnResetTheme.setOnClickListener(v -> safeRun(() -> {
             bgIndex = 0; textIndex = 0; // 白底黑字
             applyTheme();
             updateColorSelection(bgViews, bgIndex);
             updateColorSelection(textViews, textIndex);
-        });
+        })));
 
         updateColorSelection(bgViews, bgIndex);
         updateColorSelection(textViews, textIndex);
@@ -318,11 +353,13 @@ public class OverlayWindowService extends Service {
     }
 
     private void showPage(int index) {
-        m.pageAnnounce.setVisibility(index == 0 ? View.VISIBLE : View.GONE);
-        m.pageFunction.setVisibility(index == 1 ? View.VISIBLE : View.GONE);
-        m.pageSettings2.setVisibility(index == 2 ? View.VISIBLE : View.GONE);
-        m.pageControl.setVisibility(index == 3 ? View.VISIBLE : View.GONE);
-        m.pageTheme.setVisibility(index == 4 ? View.VISIBLE : View.GONE);
+        if (m == null) return;
+        // 每个页面单独判空，避免某个 id 缺失导致整页崩溃
+        if (m.pageAnnounce != null) m.pageAnnounce.setVisibility(index == 0 ? View.VISIBLE : View.GONE);
+        if (m.pageFunction != null) m.pageFunction.setVisibility(index == 1 ? View.VISIBLE : View.GONE);
+        if (m.pageSettings2 != null) m.pageSettings2.setVisibility(index == 2 ? View.VISIBLE : View.GONE);
+        if (m.pageControl != null) m.pageControl.setVisibility(index == 3 ? View.VISIBLE : View.GONE);
+        if (m.pageTheme != null) m.pageTheme.setVisibility(index == 4 ? View.VISIBLE : View.GONE);
     }
 
 
@@ -333,15 +370,15 @@ public class OverlayWindowService extends Service {
         for (int i = 0; i < viewIds.length; i++) {
             View v = root.findViewById(viewIds[i]);
             if (v != null) {
-                v.setAlpha(i == selectedIndex ? 1f : 0.45f);
+                            v.setAlpha(i == selectedIndex ? 1f : 0.45f);
             }
         }
     }
 
     private void updateParticle() {
-        if (m == null) return;
+        if (m == null || m.particleContainer == null) return;
         // m.particleContainer 就是 XML 里的 ParticleView，直接设模式，不用 addView
-        m.particleContainer.setMode(prefs.isMeteor() ? 1 : (prefs.isSnow() ? 0 : -1));
+        safeRun(() -> m.particleContainer.setMode(prefs.isMeteor() ? 1 : (prefs.isSnow() ? 0 : -1)));
     }
 
     @Override
