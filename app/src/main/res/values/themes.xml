@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Benmao" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/pink_primary</item>
+        <item name="colorPrimaryDark">@color/pink_primary</item>
+        <item name="colorAccent">@color/pink_primary</item>
+        <item name="android:windowBackground">@color/pink_bg</item>
+        <item name="android:textColor">@color/text_main</item>
+    </style>
+
+</resources>

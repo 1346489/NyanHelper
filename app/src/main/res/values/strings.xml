@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">本喵助手</string>
+    <string name="version">版本 2.0</string>
+    <string name="nav_home">主页</string>
+    <string name="nav_permission">权限</string>
+    <string name="nav_settings">设置</string>
+</resources>
