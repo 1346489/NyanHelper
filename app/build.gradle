@@ -1,22 +1,21 @@
-plugins {
-    id 'com.android.application'
-}
+apply plugin: 'com.android.application'
 
 android {
-    namespace "com.moe.nyanhelper"
-    compileSdk 34
+    compileSdkVersion 34
+    buildToolsVersion "34.0.0"
 
     defaultConfig {
-        applicationId "com.moe.nyanhelper"
-        minSdk 24
-        targetSdk 34
+        applicationId "com.benmao.assistant"
+        minSdkVersion 21
+        targetSdkVersion 34
         versionCode 2
         versionName "2.0"
     }
 
     buildTypes {
-        debug { minifyEnabled false }
-        release { minifyEnabled false }
+        release {
+            minifyEnabled false
+        }
     }
 
     compileOptions {
@@ -27,5 +26,6 @@ android {
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.android.material:material:1.11.0'
 }
