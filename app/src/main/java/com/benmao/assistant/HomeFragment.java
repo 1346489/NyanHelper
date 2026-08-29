@@ -21,7 +21,7 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view);
+        super.onViewCreated(view, savedInstanceState);
         binding.btnLaunch.setOnClickListener(v -> {
             if (getActivity() instanceof MainActivity) {
                 ((MainActivity) getActivity()).startOverlay();
