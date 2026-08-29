@@ -34,40 +34,45 @@ public class ParticleView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         width = w; height = h;
+        if (mode >= 0) setMode(mode); // 尺寸确定后重建粒子，避免越界
     }
 
     public void setMode(int mode) {
         this.mode = mode;
         particles.clear();
+        // 防止 View 未测量时 width/height 为 0 导致 nextInt(0) 崩溃
+        int w = Math.max(1, width);
+        int h = Math.max(1, height);
         if (mode == 0) {
             for (int i = 0; i < MAX; i++) {
-                particles.add(new Particle(random.nextInt(width), random.nextInt(height),
+                particles.add(new Particle(random.nextInt(w), random.nextInt(h),
                         4 + random.nextInt(6), 2 + random.nextFloat() * 4));
             }
         } else if (mode == 1) {
             for (int i = 0; i < 20; i++) {
-                particles.add(new Particle(random.nextInt(width), random.nextInt(height / 2),
+                particles.add(new Particle(random.nextInt(w), random.nextInt(Math.max(1, h / 2)),
                         2 + random.nextInt(4), 8 + random.nextFloat() * 10));
             }
         }
+        handler.removeCallbacks(frame);
         if (mode >= 0) handler.post(frame); else invalidate();
     }
 
     private final Runnable frame = new Runnable() {
         @Override
         public void run() {
-            if (mode < 0) return;
+            if (mode < 0 || width == 0) return;
             for (Particle p : particles) {
                 if (mode == 0) { // 雪花：缓慢下落
                     p.y += p.speed;
                     p.x += Math.sin(p.y / 30f) * 1.5f;
-                    if (p.y > height) { p.y = -10; p.x = random.nextInt(width); }
+                    if (p.y > height) { p.y = -10; p.x = random.nextInt(Math.max(1, width)); }
                 } else { // 流星：快速斜下
                     p.y += p.speed;
                     p.x -= p.speed * 0.6f;
                     if (p.y > height || p.x < 0) {
-                        p.y = random.nextInt(height / 2);
-                        p.x = width - random.nextInt(width / 3);
+                        p.y = random.nextInt(Math.max(1, height / 2));
+                        p.x = width - random.nextInt(Math.max(1, width / 3));
                     }
                 }
             }
