@@ -1,41 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.benmao.assistant">
 
-    <!-- 悬浮窗权限 -->
+    <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="34" />
+
+    <!-- 悬浮窗权限（Android 6.0+ 通过 Settings.canDrawOverlays 运行时申请） -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <!-- 前台服务 -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+
+    <!-- 音量键监听 -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENTS" />
 
     <application
         android:allowBackup="true"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:icon="@drawable/ic_launcher"
-        android:roundIcon="@drawable/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Benmao">
 
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".FeaturesActivity" android:exported="false" />
-        <activity android:name=".SettingsActivity" android:exported="false" />
-        <activity android:name=".ThemeActivity" android:exported="false" />
-
-        <!-- 悬浮窗服务（类名 FloatWindowService，与代码一致）-->
+        <!-- 悬浮窗服务 -->
         <service
-            android:name=".FloatWindowService"
-            android:exported="false"
-            android:foregroundServiceType="dataSync" />
+            android:name=".OverlayWindowService"
+            android:exported="false" />
 
         <!-- 无障碍服务 -->
         <service
-            android:name=".NyanAccessibilityService"
+            android:name=".BenmaoAccessibilityService"
             android:exported="true"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
