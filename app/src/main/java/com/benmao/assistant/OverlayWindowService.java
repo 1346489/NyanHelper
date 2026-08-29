@@ -46,7 +46,7 @@ public class OverlayWindowService extends Service {
     private int initialX, initialY;
     private boolean isMoving = false;
 
-    private int overlayType;   // 悬浮窗类型（兼容 API26 以下）
+    private int overlayType;
     private Prefs prefs;
     private WindowMenuBinding m;
 
@@ -195,4 +195,4 @@ public class OverlayWindowService extends Service {
     }
 
     private void buildMenu() {
-    
+        m = WindowMenuBindin
