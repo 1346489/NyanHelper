@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
+    namespace "com.benmao.assistant"
     compileSdkVersion 34
     buildToolsVersion "34.0.0"
 
