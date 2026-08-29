@@ -22,7 +22,7 @@ public class SettingsFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view);
+        super.onViewCreated(view, savedInstanceState);
 
         binding.switchDarkMode.setChecked(
                 AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES);
