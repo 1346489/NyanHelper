@@ -40,7 +40,6 @@ public class ParticleView extends View {
     public void setMode(int mode) {
         this.mode = mode;
         particles.clear();
-        // 防止 View 未测量时 width/height 为 0 导致 nextInt(0) 崩溃
         int w = Math.max(1, width);
         int h = Math.max(1, height);
         if (mode == 0) {
@@ -61,18 +60,18 @@ public class ParticleView extends View {
     private final Runnable frame = new Runnable() {
         @Override
         public void run() {
-            if (mode < 0 || width == 0) return;
+            if (mode < 0) return;
             for (Particle p : particles) {
                 if (mode == 0) { // 雪花：缓慢下落
                     p.y += p.speed;
                     p.x += Math.sin(p.y / 30f) * 1.5f;
-                    if (p.y > height) { p.y = -10; p.x = random.nextInt(Math.max(1, width)); }
+                    if (p.y > height) { p.y = -10; p.x = random.nextInt(width); }
                 } else { // 流星：快速斜下
                     p.y += p.speed;
                     p.x -= p.speed * 0.6f;
                     if (p.y > height || p.x < 0) {
-                        p.y = random.nextInt(Math.max(1, height / 2));
-                        p.x = width - random.nextInt(Math.max(1, width / 3));
+                        p.y = random.nextInt(height / 2);
+                        p.x = width - random.nextInt(width / 3);
                     }
                 }
             }
